@@ -1,0 +1,17 @@
+- an os (lainOS)
+- a language (.lain) (c like) 
+	- a compiler
+	- an interpereter (bitcode + bitcode interpretter (java machine like))
+	- a compile time computation language (metaLain) (python based) (blocks begin by #{ and finishes by }#
+	- a shell variant (shellLain)
+
+- some base librairy 
+	- log manager
+	- test manager
+	- file parsser (parse most of the standar file types)
+	- crypto suite
+
+
+- a text editor
+- a 3d renderer (basic + ray tracing)
+- a physics engine (soft + hard + fluid)

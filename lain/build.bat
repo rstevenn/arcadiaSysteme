@@ -1,0 +1,1 @@
+gcc main.c src\*.c -o bin\main.exe
