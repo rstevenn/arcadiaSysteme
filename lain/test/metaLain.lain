@@ -1,4 +1,6 @@
 {
+    char* args[];
+    char* args[-a];
     {}
 
     {{}}

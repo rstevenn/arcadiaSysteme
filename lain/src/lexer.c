@@ -313,7 +313,7 @@ Token* lexer(const char* data)
                 adder ++;
 
             addToken(&tokens, &nbTokens, getToken(globalPos, data, adder, LEX_NAME));
-            globalPos = addPos(globalPos, getPos(adder, adder+1, 0));
+            globalPos = addPos(globalPos, getPos(adder-1, adder, 0));
 
         // SPECIAL CHARS
         } else if(data[globalPos.global] == ';') {
@@ -488,7 +488,7 @@ char* TokenType2Char(TokensType type)
         case LEX_LBRACKET:
             return "Lbracket";
         case LEX_RBRACKET:
-            return "Rbraces";
+            return "Rbracket";
         case LEX_LPARENTHESIS:
             return "Lparenthesis";
         case LEX_RPARENTHESIS:

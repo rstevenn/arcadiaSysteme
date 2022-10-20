@@ -65,7 +65,10 @@ int buildBLOCK(Token* tokens, size_t* ptr, AST* node, size_t stop)
         // find blocks !! order matters
         if (buildBLOCK(tokens, &start, &candidat, end-1)) {
             addToChildren(node, candidat);
-        
+    
+        } else if(buildVarDeclTable(tokens, &start, &candidat, end-1)) {
+            addToChildren(node, candidat);
+    
         } else if(buildVarDecl(tokens, &start, &candidat, end-1)) {
             addToChildren(node, candidat);
 
@@ -94,9 +97,7 @@ int buildName(Token* tokens, size_t* ptr, AST* node, size_t stop)
 
 int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop)
 {
-    AST type;
-    AST name;
-    AST size;
+    AST type, name, size;
     size_t start = ptr[0];
 
     // check
@@ -106,18 +107,27 @@ int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop)
     if ( !buildName(tokens, &start, &name, stop))
         return 0;
 
-    if (tokens[start+1].type != LEX_LBRACKET)
+    if (tokens[start].type != LEX_LBRACKET)
         return 0;
 
-    if (!(tokens[start+2].type == LEX_RBRACKET ||
-         (tokens[start+2].type == LEX_INT_LITERAL && 
-          tokens[start+3].type == LEX_RBRACKET)))
-        return 0;
+    start++;
 
     // build Node
-    node[0] = newNode(AST_VARDECLARATION);
-    addToChildren(node, type);
-    addToChildren(node, name);
+    if (tokens[start].type == LEX_RBRACKET)
+    {
+        node[0] = newNode(AST_VARDECLARETABLE);
+        addToChildren(node, type);
+        addToChildren(node, name);
+    
+    } else if (buildLiteralInt(tokens, &start, &size, stop)) {
+        node[0] = newNode(AST_VARDECLARETABLE);
+        addToChildren(node, type);
+        addToChildren(node, name);
+        addToChildren(node, size);
+
+    } else {
+        return 0;
+    }
 
     ptr[0] = start;
 
@@ -176,7 +186,6 @@ int buildType(Token* tokens, size_t* ptr, AST* node, size_t stop)
     addToChildren(node, candidat);
 
     // check if ptr
-    INFO("%s", tokens[*ptr].raw)
     if (buildPtrType(tokens, ptr, &ptrCandidat, stop))
         addToChildren(node, ptrCandidat);
 
@@ -243,6 +252,47 @@ int buildCharType(Token* tokens, size_t* ptr, AST* node, size_t stop)
 
     return 1;
 }
+
+
+int buildLiteralInt(Token* tokens, size_t* ptr, AST* node, size_t stop)
+{
+    if ((tokens[*ptr].type != LEX_INT_LITERAL && tokens[*ptr].type != LEX_MINUS)  || 
+        (tokens[*ptr].type == LEX_MINUS && tokens[(*ptr) +1].type != LEX_INT_LITERAL))
+        return 0;
+
+    // setup data
+    size_t start = *ptr;
+    int data = 0;
+    int signe = 1;
+
+    if (tokens[start].type == LEX_MINUS) {
+        signe = -1; 
+        start += 1;
+    }
+
+    // convert chart to int
+    size_t i=0;
+    while (tokens[start].raw[i] != '\0')
+    {
+        data = 10*data + signe*(tokens[start].raw[i]-48);
+        i++;
+    }
+
+    // build node
+    int* value = (int*)malloc(sizeof(int));
+    CHECK_ALLOCATE(value, "Unable to save the depthj of the pointer")
+    value[0] = data;
+    
+    node[0] = newNode(AST_LITERALINT);
+    node->hasValue = 1;    
+    node->value = value;
+
+    ptr[0] = start+1;
+
+    return 1;
+
+}
+
 
 // utils
 AST newNode(ASTNodeType type)
@@ -343,6 +393,9 @@ void reprASTvalue(AST tree)
             break;
         case AST_PTRTYPE:
             printf("depth=%d", *((size_t*)tree.value));
+            break;
+        case AST_LITERALINT:
+            printf("value=%d", *((size_t*)tree.value));
             break;
         default:
             ERROR("Can't show data for node of type %s", NodeType2String(tree.type));

@@ -7,6 +7,8 @@
 #include "headers/lexer.h"
 #include "headers/ast.h"
 
+#define FULL_DEBUG
+
 char* readAllFile(char* path)
 {
     // open file
@@ -45,7 +47,10 @@ int main(size_t argc, char* argv[])
 
     // tokenize
     Token* tokens = lexer((const char*) rawText);
-    //showTokens(tokens, 1);
+
+#ifdef FULL_DEBUG
+    showTokens(tokens, 1);
+#endif
 
     // build ast 
     AST ast = buildAST(tokens);
