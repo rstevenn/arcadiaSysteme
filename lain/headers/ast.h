@@ -12,6 +12,7 @@ typedef enum {
     AST_BLOCK, // a block of code starting by { and finishing by }
     AST_VARDECLARATION, // declare a var 
     AST_VARDECLARETABLE, // detect if a var declaration is a table
+    AST_VARDECLAREFUNC, // declare a function
 
     // type handeling
     AST_TYPE, 
@@ -46,13 +47,13 @@ int buildName(Token* tokens, size_t* ptr, AST* node, size_t stop);
 int buildVarDecl(Token* tokens, size_t* ptr, AST* node, size_t stop);
 int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop);
 int buildType(Token* tokens, size_t* ptr, AST* node, size_t stop);
+int buildVarDeclFunc(Token* tokens, size_t* ptr, AST* node, size_t stop);
 
 int buildPtrType(Token* tokens, size_t* ptr, AST* node, size_t stop);
 int buildFloatType(Token* tokens, size_t* ptr, AST* node, size_t stop);
 int buildIntType(Token* tokens, size_t* ptr, AST* node, size_t stop);
 int buildCharType(Token* tokens, size_t* ptr, AST* node, size_t stop);
 
-// TODO
 int buildLiteralInt(Token* tokens, size_t* ptr, AST* node, size_t stop);
 
 

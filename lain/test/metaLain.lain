@@ -1,6 +1,6 @@
 {
     char* args[];
-    char* args[-a];
+    char* args[2];
     {}
 
     {{}}
@@ -9,4 +9,17 @@
 float b 
 {
  char* c
+}
+
+int foo()
+{
+    int a=2;
+    int b=3;
+    a+b;
+}
+
+int main(char* argv[], int argc)
+{
+    char hello[] = "hello";
+    foo();
 }

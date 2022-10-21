@@ -13,9 +13,15 @@ AST buildAST(Token* tokens)
         if (buildBLOCK(tokens, &ptr, &candidat, -1)) {
             addToChildren(&node, candidat);
 
-        } else if(buildVarDecl(tokens, &ptr, &candidat, -1)) {
+        } else if(buildVarDeclFunc(tokens, &ptr, &candidat, -1)) {
             addToChildren(&node, candidat);
 
+        } else if(buildVarDeclTable(tokens, &ptr, &candidat, -1)) {
+            addToChildren(&node, candidat);
+        
+        } else if(buildVarDecl(tokens, &ptr, &candidat, -1)) {
+            addToChildren(&node, candidat);
+        
         } else {
             ptr++;
         }
@@ -95,6 +101,78 @@ int buildName(Token* tokens, size_t* ptr, AST* node, size_t stop)
     return 1;
 }
 
+int buildVarDeclFunc(Token* tokens, size_t* ptr, AST* node, size_t stop)
+{
+    AST type, name, block;
+    size_t cursor = *ptr;
+
+    // check type
+    if (!buildType(tokens, &cursor, &type, stop))
+        return 0;
+
+    // check name
+    if (!buildName(tokens, &cursor, &name, stop))
+        return 0;
+
+    // check args
+    if (tokens[cursor].type != LEX_LPARENTHESIS)
+        return 0;
+
+    AST* args = NULL;
+    size_t argc = 0;
+    cursor++;
+
+    while (tokens[cursor].type != LEX_RPARENTHESIS) {
+        AST arg;
+
+        // args
+        if (buildVarDeclTable(tokens, &cursor, &arg, stop)) 
+        {
+            args = (AST*)realloc(args, sizeof(AST) * (argc+1));
+            CHECK_ALLOCATE(args, "Unable to allocate a new arg node")
+            args[argc] = arg;
+            argc++; 
+
+        } else if (buildVarDecl(tokens, &cursor, &arg, stop)) {
+            args = (AST*)realloc(args, sizeof(AST) * (argc+1));
+            CHECK_ALLOCATE(args, "Unable to allocate a new arg node")
+            args[argc] = arg;
+            argc++; 
+        } else {
+            ERROR("Token should have been var declarcation but have %s", tokens[cursor].raw)
+        }
+
+        // separetor
+        if (tokens[cursor].type != LEX_COMMA && 
+            tokens[cursor].type != LEX_RPARENTHESIS) {
+            ERROR("Token should have been \",\" or \")\" but have %s", tokens[cursor].raw)
+        }
+        
+        if (tokens[cursor].type == LEX_COMMA)
+            cursor++;
+    }
+
+    // check block
+    cursor++;
+    if (!buildBLOCK(tokens, &cursor, &block, stop)) 
+        ERROR("Token should have been \"{\" but have %s", tokens[cursor].raw)
+
+    // build node
+    node[0] = newNode(AST_VARDECLAREFUNC);
+    addToChildren(node, type);
+    addToChildren(node, name);
+
+    for (size_t i = 0; i<argc; i++)
+        addToChildren(node, args[i]);
+    
+    addToChildren(node, block);
+
+    ptr[0] = cursor;
+    free(args);
+    
+    return 1;
+}
+
 int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop)
 {
     AST type, name, size;
@@ -124,12 +202,11 @@ int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop)
         addToChildren(node, type);
         addToChildren(node, name);
         addToChildren(node, size);
-
     } else {
         return 0;
     }
 
-    ptr[0] = start;
+    ptr[0] = start+1;
 
     return 1;
 }
@@ -332,6 +409,8 @@ char* NodeType2String(ASTNodeType type)
             return "LiteralInt";
         case AST_VARDECLARETABLE:
             return "TableVarDecl";
+        case AST_VARDECLAREFUNC:
+            return "FuncDecl";
         default:
             ERROR("Unknow NodeType %d", type)
     }
