@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "vector": "cpp",
-        "crc35.h": "c"
+        "crc35.h": "c",
+        "xmemory": "c"
     }
 }

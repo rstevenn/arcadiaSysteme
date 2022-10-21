@@ -33,11 +33,11 @@ AST buildAST(Token* tokens)
 // build other nodes
 int buildBLOCK(Token* tokens, size_t* ptr, AST* node, size_t stop)
 {
-    size_t start = *ptr;
+    size_t cursor = *ptr;
     size_t end = *ptr + 1;
 
     // check start
-    if (tokens[start].type != LEX_LBRACE)
+    if (tokens[cursor].type != LEX_LBRACE)
         return 0;
 
     // find end
@@ -53,7 +53,7 @@ int buildBLOCK(Token* tokens, size_t* ptr, AST* node, size_t stop)
 
         // error
         if (tokens[end].type == LEX_ENDOFTOKENS || (end == stop))
-            ERROR("Block opend on line %d char %d never closed", tokens[start].pos.lineNb, tokens[start].pos.lineNb)
+            ERROR("Block opend on line %d char %d never closed", tokens[cursor].pos.lineNb, tokens[cursor].pos.lineNb)
         
         end++;
     }
@@ -64,22 +64,22 @@ int buildBLOCK(Token* tokens, size_t* ptr, AST* node, size_t stop)
 
     // check children
     AST candidat;
-    start++;
+    cursor++;
 
-    while (start < end-1 && start != stop)
+    while (cursor < end-1 && cursor != stop)
     {
         // find blocks !! order matters
-        if (buildBLOCK(tokens, &start, &candidat, end-1)) {
+        if (buildBLOCK(tokens, &cursor, &candidat, end-1)) {
             addToChildren(node, candidat);
     
-        } else if(buildVarDeclTable(tokens, &start, &candidat, end-1)) {
+        } else if(buildVarDeclTable(tokens, &cursor, &candidat, end-1)) {
             addToChildren(node, candidat);
     
-        } else if(buildVarDecl(tokens, &start, &candidat, end-1)) {
+        } else if(buildVarDecl(tokens, &cursor, &candidat, end-1)) {
             addToChildren(node, candidat);
 
         } else {
-            start++;
+            cursor++;
         }
     }
 
@@ -128,14 +128,14 @@ int buildVarDeclFunc(Token* tokens, size_t* ptr, AST* node, size_t stop)
         // args
         if (buildVarDeclTable(tokens, &cursor, &arg, stop)) 
         {
-            args = (AST*)realloc(args, sizeof(AST) * (argc+1));
-            CHECK_ALLOCATE(args, "Unable to allocate a new arg node")
+            SECURE_REALLOCATE(args, AST*, sizeof(AST)*(argc+1), 
+                              "Unable to allocate a new arg node")
             args[argc] = arg;
             argc++; 
 
         } else if (buildVarDecl(tokens, &cursor, &arg, stop)) {
-            args = (AST*)realloc(args, sizeof(AST) * (argc+1));
-            CHECK_ALLOCATE(args, "Unable to allocate a new arg node")
+            SECURE_REALLOCATE(args, AST*, sizeof(AST)*(argc+1), 
+                              "Unable to allocate a new arg node")
             args[argc] = arg;
             argc++; 
         } else {
@@ -168,36 +168,36 @@ int buildVarDeclFunc(Token* tokens, size_t* ptr, AST* node, size_t stop)
     addToChildren(node, block);
 
     ptr[0] = cursor;
-    free(args);
     
+    free(args);
     return 1;
 }
 
 int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop)
 {
     AST type, name, size;
-    size_t start = ptr[0];
+    size_t cursor = ptr[0];
 
     // check
-    if ( !buildType(tokens, &start, &type, stop))
+    if ( !buildType(tokens, &cursor, &type, stop))
         return 0;
 
-    if ( !buildName(tokens, &start, &name, stop))
+    if ( !buildName(tokens, &cursor, &name, stop))
         return 0;
 
-    if (tokens[start].type != LEX_LBRACKET)
+    if (tokens[cursor].type != LEX_LBRACKET)
         return 0;
 
-    start++;
+    cursor++;
 
     // build Node
-    if (tokens[start].type == LEX_RBRACKET)
+    if (tokens[cursor].type == LEX_RBRACKET)
     {
         node[0] = newNode(AST_VARDECLARETABLE);
         addToChildren(node, type);
         addToChildren(node, name);
     
-    } else if (buildLiteralInt(tokens, &start, &size, stop)) {
+    } else if (buildLiteralInt(tokens, &cursor, &size, stop)) {
         node[0] = newNode(AST_VARDECLARETABLE);
         addToChildren(node, type);
         addToChildren(node, name);
@@ -206,7 +206,7 @@ int buildVarDeclTable(Token* tokens, size_t* ptr, AST* node, size_t stop)
         return 0;
     }
 
-    ptr[0] = start+1;
+    ptr[0] = cursor+1;
 
     return 1;
 }
@@ -215,20 +215,20 @@ int buildVarDecl(Token* tokens, size_t* ptr, AST* node, size_t stop)
 {
     AST type;
     AST name;
-    size_t start = ptr[0];
+    size_t cursor = ptr[0];
 
     // check
-    if ( !buildType(tokens, &start, &type, stop))
+    if ( !buildType(tokens, &cursor, &type, stop))
         return 0;
 
-    if ( !buildName(tokens, &start, &name, stop))
+    if ( !buildName(tokens, &cursor, &name, stop))
         return 0;
 
     // build Node
     node[0] = newNode(AST_VARDECLARATION);
     addToChildren(node, type);
     addToChildren(node, name);
-    ptr[0] = start;
+    ptr[0] = cursor;
 
     return 1;
 }
@@ -418,8 +418,8 @@ char* NodeType2String(ASTNodeType type)
 
 void addToChildren(AST* parent, AST children)
 {
-    parent->children = (AST*)realloc(parent->children, sizeof(AST)*(parent->length+1));
-    CHECK_ALLOCATE(parent->children, "Unable to alocate a new node in the ast")
+    SECURE_REALLOCATE(parent->children, AST*, sizeof(AST)*(parent->length+1),
+                      "Unable to alocate a new node in the ast")
     parent->children[parent->length] = children;
     parent->length++; 
 }

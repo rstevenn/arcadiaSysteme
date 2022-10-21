@@ -41,8 +41,8 @@ Token getToken(Pos pos, const char* data, size_t size, TokensType type)
     data = &(data[pos.global]);
 
     // allocate memory and sotre raw data
-    token.raw = (char*)malloc(sizeof(char) * (size+1));
-    CHECK_ALLOCATE(token.raw, "Can't allocate memory for the token %s", data);
+    SECURE_ALLOCATE(token.raw, char*, sizeof(char)*(size+1), 
+                    "Can't allocate memory for the token %s", data)
     token.raw[size] = '\0'; //nul terminetaed
 
     token.raw = memcpy(token.raw, data, size);
@@ -53,8 +53,8 @@ Token getToken(Pos pos, const char* data, size_t size, TokensType type)
 
 void addToken(Token** tokens, size_t* size, Token token)
 {
-    tokens[0] = realloc(tokens[0], sizeof(Token)*(size[0]+1));
-    CHECK_ALLOCATE(tokens[0], "cant allocate memory for the token nb %d", size[0]+1)
+    SECURE_REALLOCATE(tokens[0], Token*, sizeof(Token)*(size[0]+1), 
+                      "cant allocate memory for the token nb %d", size[0]+1)
     tokens[0][size[0]] = token;
 
     size[0]++;
@@ -416,8 +416,8 @@ Token* lexer(const char* data)
     }
 
     // set the the end token
-    tokens = realloc(tokens, sizeof(Token)*(nbTokens+1));
-    CHECK_ALLOCATE(tokens, "cant allocate memory for the token nb %d", nbTokens+1)
+    SECURE_REALLOCATE(tokens, Token*, sizeof(Token)*(nbTokens+1),
+                      "cant allocate memory for the token nb %d", nbTokens+1)
     tokens[nbTokens].type = LEX_ENDOFTOKENS;
 
     return tokens;
