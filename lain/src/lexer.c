@@ -372,6 +372,14 @@ Token* lexer(const char* data)
             addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_EQ));
             posTracker(data, &globalPos);
 
+        } else if(data[globalPos.global] == '>') {
+            addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_GT));
+            posTracker(data, &globalPos);
+
+        } else if(data[globalPos.global] == '<') {
+            addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_LT));
+            posTracker(data, &globalPos);
+
         } else if(data[globalPos.global] == '+') {
             addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_PLUS));
             posTracker(data, &globalPos);
@@ -523,6 +531,10 @@ char* TokenType2Char(TokensType type)
             return "Retline";
         case LEX_EQ:
             return "Equal";
+        case LEX_GT:
+            return "Greater than";
+        case LEX_LT:
+            return "Less than";
         default:
             ERROR("Unknow token type %d", type)
     }

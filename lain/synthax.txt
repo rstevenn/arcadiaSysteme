@@ -1,3 +1,11 @@
+
+// TODO
+pointers to functions
+anonymous functions
+advanced block
+
+
+// synthax
 functions:
 
 type name(type name, type name, type name, ...) {block}

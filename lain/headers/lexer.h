@@ -44,6 +44,8 @@ typedef enum {
     LEX_MULT,
     LEX_DIV,
     LEX_EQ,
+    LEX_GT,
+    LEX_LT,
 
     // names
     LEX_NAME,
