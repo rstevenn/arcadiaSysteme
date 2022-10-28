@@ -51,7 +51,7 @@ v3 rotation3DXpoint(v3 point, float angle);
 v3 rotation3DYpoint(v3 point, float angle);
 v3 rotation3DZpoint(v3 point, float angle);
 
-
+triangle3d roatation3dtri(triangle3d tri, v3 angle, v3 rotor);
 
 
 v2 getv2(float a, float b);
@@ -71,5 +71,16 @@ v2 v2divfloat(v2 a, float b);
 float v2cross(v2 a, v2 b);
 
 // v3 math 
+v3 v3plusv3(v3 a, v3 b);
+v3 v3minusv3(v3 a, v3 b);
+v3 v3multv3(v3 a, v3 b);
+v3 v3divv3(v3 a, v3 b);
+
+v3 v3plusfloat(v3 a, float b);
+v3 v3minusfloat(v3 a, float b);
+v3 v3multfloat(v3 a, float b);
+v3 v3divfloat(v3 a, float b);
+
+float dist3d(v3 a, v3 b);
 
 #endif

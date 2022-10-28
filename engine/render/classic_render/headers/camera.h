@@ -10,6 +10,9 @@ typedef struct
     int w;
     int h;
 
+    v3 pos;
+    v3 angle;
+
 } Camera;
 
 

@@ -5,6 +5,7 @@
         "xmemory": "c",
         "render_math.h": "c",
         "utils.h": "c",
-        "base_log.h": "c"
+        "base_log.h": "c",
+        "camera.h": "c"
     }
 }
