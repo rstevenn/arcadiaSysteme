@@ -2,6 +2,9 @@
     "files.associations": {
         "vector": "cpp",
         "crc35.h": "c",
-        "xmemory": "c"
+        "xmemory": "c",
+        "render_math.h": "c",
+        "utils.h": "c",
+        "base_log.h": "c"
     }
 }
