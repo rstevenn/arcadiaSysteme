@@ -1,6 +1,21 @@
 #include "../headers/camera.h"
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
+
+Camera getCamera(v3 pos, v3 angle, float flength, int w, int h)
+{
+    Camera cam;
+
+    cam.pos = pos;
+    cam.angle = angle;
+    cam.flength = flength;
+
+    cam.w = w;
+    cam.h = h;
+
+    return cam;
+}
 
 int getDPos(int x, int y, int w, int h)
 {
@@ -14,6 +29,11 @@ int getIPos(int x, int y, int w, int h)
 
 void renderTri(Camera cam, char* buffer, float* distBuffer, triangle3d* tri, int nbTri)
 {
+    // reset buffers
+    memset(buffer, 0, cam.w*cam.h*sizeof(char)*4);
+    memset(distBuffer, 0, cam.w*cam.h*sizeof(float));
+
+
     // rendering loop
     for (size_t i=0; i<nbTri; i++)
     {
@@ -70,9 +90,22 @@ void renderTri(Camera cam, char* buffer, float* distBuffer, triangle3d* tri, int
                         i_pos = getIPos(x+cam.w/2, y+cam.h/2, cam.w, cam.h);
                         buffer[i_pos+3] = 255;
                         
+                        if (i==0)
+                        {
+                            buffer[i_pos+2] = 255;
+                            buffer[i_pos+1] = 0;
+                            buffer[i_pos+0] = 0;
+                        } else {
+                            buffer[i_pos+2] = 0;
+                            buffer[i_pos+1] = 255;
+                            buffer[i_pos+0] = 0;
+                        }
+
+                        /*
                         buffer[i_pos+2] = (int)baryblend(bariCoord, 255, 0, 0);
                         buffer[i_pos+1] = (int)baryblend(bariCoord, 0, 255, 0);
-                        buffer[i_pos+0] = (int)baryblend(bariCoord, 0, 0, 255); 
+                        buffer[i_pos+0] = (int)baryblend(bariCoord, 0, 0, 255);
+                        */ 
                     }
                 }
             }

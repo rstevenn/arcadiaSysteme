@@ -60,19 +60,13 @@ triangle3d get3dtri(v3 a, v3 b, v3 c)
 }
 
 
-
-float sign (v2 p1, v2 p2, v2 p3)
-{
-    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-}
-
 int inside2dtri(triangle2d t, v2 p)
 {
     v3 coord = barycentric(t.a, t.b, t.c, p);
 
-    return (0 <= coord.x && coord.x <= 1) &&
-           (0 <= coord.y && coord.y <= 1) &&
-           (0 <= coord.z && coord.z <= 1);
+    return (0 < coord.x && coord.x < 1) &&
+           (0 < coord.y && coord.y < 1) &&
+           (0 < coord.z && coord.z < 1);
 }
 
 

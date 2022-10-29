@@ -1,22 +1,26 @@
 #include "utils/std.h"
 #include "headers/render_math.h"
 #include "headers/camera.h"
+#include "headers/texture.h"
 
 #include <string.h>
 #include <SDL2/SDL.h>
 
-#define WIDTH 500
-#define HEIGHT 500
+
+#define HEIGHT 1000
+#define WIDTH (int)(HEIGHT*16/9)
 #define FPS 1000
 
+char buffer[WIDTH*HEIGHT*4];
+float dist[WIDTH*HEIGHT];    
 
 int main(int argc, char* argv[])
 {
 
     /*
         TODO:
-
-            Texture
+            Get cam
+            Textures
     */
    NOT_IMPLEMENTED()
 
@@ -47,19 +51,13 @@ int main(int argc, char* argv[])
 
 
     // try something
-    char buffer[WIDTH*HEIGHT*4];  
+    
     memset(buffer, 0, WIDTH*HEIGHT*sizeof(Uint32));
-
-    float dist[WIDTH*HEIGHT];  
     memset(dist, 0, WIDTH*HEIGHT*sizeof(float));
 
     // define camera    
-    Camera cam;
-    cam.flength = 1000;
-    cam.h = HEIGHT;
-    cam.w = WIDTH;
-    cam.pos = getv3(200, 200, 0);
-    cam.angle = getv3(0, 0, 0);
+    Camera cam = getCamera(getv3(200, 200, 0), getv3(0, 0, 0), 1000,
+                           WIDTH, HEIGHT);
 
     // define triangle
     triangle3d tri[2];
@@ -69,17 +67,33 @@ int main(int argc, char* argv[])
 
     tri[1] = roatation3dtri(tri[0], getv3(0, 90, 0), getv3(200, 100, 110));
 
-    // render
-    for (int i=0; i<5000; i++)
+    // loop
+    SDL_Event event;
+    int run = 1;
+    while (run)
     {
-        memset(buffer, 0, WIDTH*HEIGHT*sizeof(Uint32));
-        memset(dist, 0, WIDTH*HEIGHT*sizeof(float));
-        
-        cam.angle.z = cam.angle.z+.5;
-        tri[0] = roatation3dtri(tri[0], getv3(0, 1, 0), getv3(200, 100, 110));
-        tri[1] = roatation3dtri(tri[1], getv3(0, 1, 0), getv3(200, 100, 110));
-        renderTri(cam, buffer, dist, tri, 2);
+        /* Process events */
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                case SDL_QUIT:
+                    run = 0;
+                    break;
 
+                default:
+                    break;
+            }
+        }
+
+        // rotate
+        cam.angle.z = cam.angle.z+.1;
+        tri[0] = roatation3dtri(tri[0], getv3(0, .5, 0), getv3(200, 100, 110));
+        tri[1] = roatation3dtri(tri[1], getv3(0, .5, 0), getv3(200, 100, 110));
+
+
+        // render
+        renderTri(cam, buffer, dist, tri, 2);
         SDL_RenderClear(rend);
 	
         SDL_UpdateTexture(texture, NULL, buffer, WIDTH*sizeof(Uint32));
@@ -95,6 +109,8 @@ int main(int argc, char* argv[])
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(wind);    
     SDL_Quit();
+
+    INFO("END NORMALY")
     
     return 0;
 }
