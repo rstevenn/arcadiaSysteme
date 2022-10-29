@@ -13,14 +13,16 @@
 
 char buffer[WIDTH*HEIGHT*4];
 float dist[WIDTH*HEIGHT];    
+char noiseTexture[100*100*3];
+
 
 int main(int argc, char* argv[])
 {
 
     /*
         TODO:
-            Get cam
             Textures
+            PerlinLikeNoise
     */
    NOT_IMPLEMENTED()
 
@@ -51,21 +53,32 @@ int main(int argc, char* argv[])
 
 
     // try something
-    
     memset(buffer, 0, WIDTH*HEIGHT*sizeof(Uint32));
-    memset(dist, 0, WIDTH*HEIGHT*sizeof(float));
+    memset(dist,   0, WIDTH*HEIGHT*sizeof(float));
 
     // define camera    
     Camera cam = getCamera(getv3(200, 200, 0), getv3(0, 0, 0), 1000,
                            WIDTH, HEIGHT);
 
     // define triangle
-    triangle3d tri[2];
-    tri[0] = get3dtri(getv3(100, 100, 110),
-                      getv3(300, 100, 110),
-                      getv3(200, 300, 110));
+    TexturedTriangle3d tri[2];
 
-    tri[1] = roatation3dtri(tri[0], getv3(0, 90, 0), getv3(200, 100, 110));
+    v2 perlinPos = getv2(0, 0);
+    perlineTexture(noiseTexture, 100, 100, perlinPos);
+
+    triangle3d pos0 = get3dtri(getv3(100, 100, 110),
+                               getv3(300, 100, 110),
+                               getv3(200, 300, 110));
+
+    tri[0] = get3dtriBaryBuffer(pos0.a, pos0.b, pos0.c, 
+                                noiseTexture, get2dtri(getv2(1, 1), getv2(99, 1), getv2(1, 99)),
+                                100);
+
+
+    triangle3d pos1 = roatation3dtri(pos0, getv3(0, 90, 0), getv3(200, 100, 110));
+    tri[1] = get3dtriBaryColor(pos1.a,           pos1.b,           pos1.c, 
+                               getv3(255, 0, 0), getv3(0, 255, 0), getv3(0, 0, 255));
+
 
     // loop
     SDL_Event event;
@@ -88,12 +101,27 @@ int main(int argc, char* argv[])
 
         // rotate
         cam.angle.z = cam.angle.z+.1;
-        tri[0] = roatation3dtri(tri[0], getv3(0, .5, 0), getv3(200, 100, 110));
-        tri[1] = roatation3dtri(tri[1], getv3(0, .5, 0), getv3(200, 100, 110));
+        tri[0].pos = roatation3dtri(tri[0].pos, getv3(0, .5, 0), getv3(200, 100, 110));
+        tri[1].pos = roatation3dtri(tri[1].pos, getv3(0, .5, 0), getv3(200, 100, 110));
 
 
         // render
         renderTri(cam, buffer, dist, tri, 2);
+
+        // write the noise on the top left corner
+        for (int k=0; k<100; k++)
+        {
+            for (int l=0; l<100; l++)
+            {
+                int id = (k+l*WIDTH)*4;
+
+                buffer[id+3] =   255;
+                buffer[id+0] = noiseTexture[(k+l*100)*3];
+                buffer[id+1] = noiseTexture[1 + (k+l*100)*3];
+                buffer[id+2] = noiseTexture[2 + (k+l*100)*3];
+            }
+        }
+
         SDL_RenderClear(rend);
 	
         SDL_UpdateTexture(texture, NULL, buffer, WIDTH*sizeof(Uint32));

@@ -27,7 +27,7 @@ int getIPos(int x, int y, int w, int h)
     return (x+(h-y-1)*w)*4;
 }
 
-void renderTri(Camera cam, char* buffer, float* distBuffer, triangle3d* tri, int nbTri)
+void renderTri(Camera cam, char* buffer, float* distBuffer, TexturedTriangle3d* tri, int nbTri)
 {
     // reset buffers
     memset(buffer, 0, cam.w*cam.h*sizeof(char)*4);
@@ -38,7 +38,7 @@ void renderTri(Camera cam, char* buffer, float* distBuffer, triangle3d* tri, int
     for (size_t i=0; i<nbTri; i++)
     {
         // cam pos
-        triangle3d localTri = roatation3dtri(tri[i], cam.angle, cam.pos);
+        triangle3d localTri = roatation3dtri(tri[i].pos, cam.angle, cam.pos);
         localTri.a = v3minusv3(localTri.a, cam.pos); 
         localTri.b = v3minusv3(localTri.b, cam.pos);
         localTri.c = v3minusv3(localTri.c, cam.pos);
@@ -90,22 +90,11 @@ void renderTri(Camera cam, char* buffer, float* distBuffer, triangle3d* tri, int
                         i_pos = getIPos(x+cam.w/2, y+cam.h/2, cam.w, cam.h);
                         buffer[i_pos+3] = 255;
                         
-                        if (i==0)
-                        {
-                            buffer[i_pos+2] = 255;
-                            buffer[i_pos+1] = 0;
-                            buffer[i_pos+0] = 0;
-                        } else {
-                            buffer[i_pos+2] = 0;
-                            buffer[i_pos+1] = 255;
-                            buffer[i_pos+0] = 0;
-                        }
-
-                        /*
-                        buffer[i_pos+2] = (int)baryblend(bariCoord, 255, 0, 0);
-                        buffer[i_pos+1] = (int)baryblend(bariCoord, 0, 255, 0);
-                        buffer[i_pos+0] = (int)baryblend(bariCoord, 0, 0, 255);
-                        */ 
+                        v3 color = tri[i].getColor(bariCoord, tri[i].data); 
+                        
+                        buffer[i_pos+2] = color.x;
+                        buffer[i_pos+1] = color.y;
+                        buffer[i_pos+0] = color.z;
                     }
                 }
             }
