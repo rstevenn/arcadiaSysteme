@@ -27,11 +27,19 @@ int getIPos(int x, int y, int w, int h)
     return (x+(h-y-1)*w)*4;
 }
 
+float projectedZ(float near, float far, float z)
+{
+    return 2* (z-near) / (far-near) - 1;
+}
+
 void renderTri(Camera cam, char* buffer, float* distBuffer, TexturedTriangle3d* tri, int nbTri)
 {
+    float near = 0.1;
+    float far = 1000;
+
     // reset buffers
     memset(buffer, 0, cam.w*cam.h*sizeof(char)*4);
-    memset(distBuffer, 0, cam.w*cam.h*sizeof(float));
+    memset(distBuffer, 100, cam.w*cam.h*sizeof(float));
 
 
     // rendering loop
@@ -51,9 +59,9 @@ void renderTri(Camera cam, char* buffer, float* distBuffer, TexturedTriangle3d* 
         triangle2d t = get2dtri(a, b, c);
 
         // dist
-        float da = localTri.a.z;
-        float db = localTri.b.z;
-        float dc = localTri.c.z;
+        float da = projectedZ(near, far, localTri.a.z);
+        float db = projectedZ(near, far, localTri.b.z);
+        float dc = projectedZ(near, far, localTri.c.z);
 
         // find bounding box
         int x_min = (int)fmin(fmin(a.x, b.x), c.x); 
@@ -79,9 +87,11 @@ void renderTri(Camera cam, char* buffer, float* distBuffer, TexturedTriangle3d* 
                     
                     // check dist                    
                     dist = baryblend(bariCoord, da, db, dc);
+                    
+
                     d_pos = getDPos(x+cam.w/2, y+cam.h/2, cam.w, cam.h);                    
 
-                    if (dist > 0 && (dist <= distBuffer[d_pos] || distBuffer[d_pos] == 0)) {
+                    if (dist > -1 && dist < 1 && (dist <= distBuffer[d_pos] || distBuffer[d_pos] == 0)) {
                         
                         distBuffer[d_pos] = dist;
 

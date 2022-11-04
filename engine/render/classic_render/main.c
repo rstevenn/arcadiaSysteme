@@ -11,9 +11,11 @@
 #define WIDTH (int)(HEIGHT*16/9)
 #define FPS 1000
 
+#define NOISE_S 256
+
 char buffer[WIDTH*HEIGHT*4];
 float dist[WIDTH*HEIGHT];    
-char noiseTexture[100*100*3];
+char noiseTexture[NOISE_S*NOISE_S*3];
 
 
 int main(int argc, char* argv[])
@@ -21,8 +23,7 @@ int main(int argc, char* argv[])
 
     /*
         TODO:
-            Textures
-            PerlinLikeNoise
+
     */
    NOT_IMPLEMENTED()
 
@@ -57,22 +58,22 @@ int main(int argc, char* argv[])
     memset(dist,   0, WIDTH*HEIGHT*sizeof(float));
 
     // define camera    
-    Camera cam = getCamera(getv3(200, 200, 0), getv3(0, 0, 0), 1000,
+    Camera cam = getCamera(getv3(0, 0, 0), getv3(0, 0, 0), 1000,
                            WIDTH, HEIGHT);
 
     // define triangle
     TexturedTriangle3d tri[2];
 
     v2 perlinPos = getv2(0, 0);
-    perlineTexture(noiseTexture, 100, 100, perlinPos);
+    perlineTexture(noiseTexture, NOISE_S, NOISE_S, perlinPos);
 
     triangle3d pos0 = get3dtri(getv3(100, 100, 110),
                                getv3(300, 100, 110),
                                getv3(200, 300, 110));
 
     tri[0] = get3dtriBaryBuffer(pos0.a, pos0.b, pos0.c, 
-                                noiseTexture, get2dtri(getv2(1, 1), getv2(99, 1), getv2(1, 99)),
-                                100);
+                                noiseTexture, get2dtri(getv2(1, 1), getv2(NOISE_S-1, 1), getv2(1, NOISE_S-1)),
+                                NOISE_S);
 
 
     triangle3d pos1 = roatation3dtri(pos0, getv3(0, 90, 0), getv3(200, 100, 110));
@@ -104,21 +105,24 @@ int main(int argc, char* argv[])
         tri[0].pos = roatation3dtri(tri[0].pos, getv3(0, .5, 0), getv3(200, 100, 110));
         tri[1].pos = roatation3dtri(tri[1].pos, getv3(0, .5, 0), getv3(200, 100, 110));
 
+        perlinPos = v2plusv2(perlinPos, getv2(.1, .1));
+        perlineTexture(noiseTexture, NOISE_S, NOISE_S, perlinPos);
+
 
         // render
         renderTri(cam, buffer, dist, tri, 2);
 
         // write the noise on the top left corner
-        for (int k=0; k<100; k++)
+        for (int k=0; k<NOISE_S; k++)
         {
-            for (int l=0; l<100; l++)
+            for (int l=0; l<NOISE_S; l++)
             {
                 int id = (k+l*WIDTH)*4;
 
                 buffer[id+3] =   255;
-                buffer[id+0] = noiseTexture[(k+l*100)*3];
-                buffer[id+1] = noiseTexture[1 + (k+l*100)*3];
-                buffer[id+2] = noiseTexture[2 + (k+l*100)*3];
+                buffer[id+0] = noiseTexture[(k+l*NOISE_S)    *3];
+                buffer[id+1] = noiseTexture[1 + (k+l*NOISE_S)*3];
+                buffer[id+2] = noiseTexture[2 + (k+l*NOISE_S)*3];
             }
         }
 

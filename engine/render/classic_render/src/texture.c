@@ -56,7 +56,7 @@ void perlineTexture(char* buffer, int w, int h, v2 pos)
         for (int j=0; j<h; j++)
         {
             int id = (i+j*w)*3;
-            float value = noise2d(pos.x+ (float)i/10, pos.y+(float)j/10);
+            float value = noise2d(pos.x+ (float)i/20, pos.y+(float)j/20);
 
             buffer[id] = (int)(value) %255;
             buffer[id+1] = (int)(value) %255;
