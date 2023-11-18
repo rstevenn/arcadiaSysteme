@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 
     /*
         TODO:
+            load and save 3d scene
 
     */
    NOT_IMPLEMENTED()
@@ -101,6 +102,7 @@ int main(int argc, char* argv[])
         }
 
         // rotate
+        
         cam.angle.z = cam.angle.z+.1;
         tri[0].pos = roatation3dtri(tri[0].pos, getv3(0, .5, 0), getv3(200, 100, 110));
         tri[1].pos = roatation3dtri(tri[1].pos, getv3(0, .5, 0), getv3(200, 100, 110));

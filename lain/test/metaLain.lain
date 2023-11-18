@@ -6,7 +6,9 @@
     {{}}
     int a = 3+4;
 }
+
 float b 
+
 {
  char* c
 }

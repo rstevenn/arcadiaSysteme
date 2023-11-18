@@ -1,0 +1,103 @@
+// byte code that will be used in the wired_vm interpretor
+
+
+// Header
+typedef struct {
+    uint8_t   identificator[5]; // "WIRED"
+    uint64_t  ram_size;
+    uint64_t  stack_size;
+    uint64_t  entry_point;
+} wired_vm_header_t;
+
+
+// Instructions
+0x00    scall   val        // call a syscall the function nb val
+
+// memory
+0x01    load    ra    rb   // load the value *rb   in the registry ra 
+0x02    loadi   ra    val  // load the value val   in the registry ra
+0x03    loada   ra    addr // load the value *addr in the registry ra
+  
+0x04    save    ra    rb   // save the value *rb in the adresse *ra
+0x05    savei   ra    val  // save the value val in the adresse *ra
+0x06    savea   addr  rb   // save the value *rb in the adresse addr
+0x07    saveai  addr  val  // save the value val in the adresse addr
+
+// math
+0x08    add   ra, rb, rc   // *rb + *rc => *ra
+0x09    addi  ra, rb, val  // *rb + val => *ra
+
+0x0a    min   ra rb rc     // *rb - *rc => *ra
+0x0b    mini  ra rb val    // *rb - val => *ra
+
+0x0c    mult  ra rb rc     // *rb * *rc => *ra
+0x0d    multi ra rb val    // *rb * val => *ra
+
+0x0e    div   ra rb rc     // *rb / *rc => *ra
+0x0f    divi  ra rb val    // *rb / val => *ra
+
+// logic
+0x10    and   ra rb rc     // *rb & *rc => *ra 
+0x11    andi  ra rb val    // *rb & val => *ra
+
+0x12    or    ra rb rc     // *rb | *rb => *ra 
+0x13    ori   ra rb val    // *rb | val => *ra   
+
+0x14    xor   ra rb rc     // *rb ^ *rb => *ra 
+0x15    xori  ra rb val    // *rb ^ val => *ra 
+
+0x15    not   ra rb        // !(*rb) => ra  
+0x16    noti  ra val       // ! val  => ra
+
+// comp
+0x17    eq    ra rb        // ( *ra == *rb ) => $eq
+0x18    eqi   ra val       // ( *ra == val ) => $eq
+
+0x19    neq   ra rb        // ( *ra != *rb ) => $eq 
+0x1a    neqi  ra val       // ( *ra != val ) => $eq
+
+0x1b    gt    ra rb        // ( *ra > *rb )  => $eq 
+0x1c    gti   ra val       // ( *ra > val )  => $eq
+0x1d    gte   ra rb        // ( *ra >= *rb ) => $eq
+0x1e    gtei  ra val       // ( *ra >= val ) => $eq
+
+0x1f    lt    ra rb        // ( *ra < *rb )  => $eq
+0x20    lti   ra val       // ( *ra < val )  => $eq
+0x21    lte   ra rb        // ( *ra <= *rb ) => $eq
+0x22    ltei  ra val       // ( *ra <= val ) => $eq 
+
+// jumps
+0x23    jre  ra            // $pc + *ra  => $pc  
+0x24    jrei addr          // $pc + adrr => $pc
+
+0x25    jeq  ra            // *ra  => $pc if $eq != 0 
+0x26    jeqi addr          // addr => $pc if $eq != 0
+
+0x27    jne  ra            // *ra  => $pc if $eq == 0
+0x28    jnei addr          // addr => $pc if $eq != 0
+
+0x29    jmp  ra            // *ra  => $pc
+0x2a    jmpi addr          // addr => $pc
+
+0x2b    jump_th ra         // create a new thread with the entry point at *ra
+0x2c    jump_thi addr      // create a new thread with the entry point at addr
+
+
+// registery
+$pc // instruction pointer
+$eq // comparaison results
+$sp // stack pointer
+$z  // 0  
+$rt // 64bits return pointer
+
+// 64bits registers
+$ra
+$rb
+$rc
+$rd
+$re
+$rf
+
+// syscalls
+0 : no operation
+

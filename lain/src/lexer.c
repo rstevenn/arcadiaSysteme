@@ -398,19 +398,19 @@ Token* lexer(const char* data)
 
         // SEPATRATOR
         } else if(data[globalPos.global] == ' ') {
-            //addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_SPACE));
+            addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_SPACE));
             posTracker(data, &globalPos);
         
         } else if(data[globalPos.global] == '\t') {
-            //addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_TAB));
+            addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_TAB));
             posTracker(data, &globalPos);
         
         } else if(data[globalPos.global] == '\n') {
-            //addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_NLINE));
+            addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_NLINE));
             posTracker(data, &globalPos);
 
         } else if(data[globalPos.global] == '\r') {
-            //addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_RETLINE));
+            addToken(&tokens, &nbTokens, getToken(globalPos, data, 1, LEX_RETLINE));
             posTracker(data, &globalPos);
 
         } else {

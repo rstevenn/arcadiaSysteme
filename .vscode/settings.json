@@ -8,6 +8,9 @@
         "base_log.h": "c",
         "camera.h": "c",
         "xstring": "c",
-        "xutility": "c"
+        "xutility": "c",
+        "stdio.h": "c",
+        "initializer_list": "c",
+        "type_traits": "c"
     }
 }
