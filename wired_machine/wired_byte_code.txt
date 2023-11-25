@@ -97,6 +97,8 @@ $rc
 $rd
 $re
 $rf
+$rg
+$rh
 
 // syscalls
 0 : no operation

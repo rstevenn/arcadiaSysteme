@@ -8,6 +8,53 @@
 #include "wired.def.h"
 
 
+void parse_scall_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a scall instr")
+
+    unsigned int nb = 0;
+    for (char* current=buffer; (*current) != '\0'; current++) {
+        if (*current < '0' || *current > '9') 
+            ERROR("Can't parse syscall number %s", buffer)
+
+        nb *= 10;
+        nb += *current-'0';
+    }
+
+    op->args.arg_64.arg0 = nb;
+}
+
+
+void insert_instruction(program_t* pgm, operation_t op) {
+    
+    pgm->operations = (operation_t*)realloc(pgm->operations, sizeof(operation_t) * (pgm->len + 1));
+    if (pgm->operations == NULL) 
+        ERROR("Can't allocate memory")
+    
+    operation_t* ok = (operation_t*)memcpy(&(pgm->operations[pgm->len]), &op, sizeof(op));
+    if (ok == NULL) 
+        ERROR("Can't copy data")
+
+    pgm->len++;
+}
+
+
+size_t parse_instruction(char* buffer, program_t* pgm){
+    if (strcmp("scall", buffer) == 0) {
+
+        INFO("parsed scall")
+        operation_t op;
+        op.type = SCALL_INST;
+        op.parse_args = (parse_args_t*)&parse_scall_arg;
+
+        insert_instruction(pgm, op);
+    
+    } else {
+        WARNING("Can't parse '%s'", buffer)
+    }   
+    return sizeof(operation_t);
+}
+
 
 char* readAllFile(char* path)
 {
@@ -37,10 +84,6 @@ char* readAllFile(char* path)
 
 int main(size_t argc, char* argv[])
 {
-
-    INFO("%lu", sizeof(operation_t)*8)
-    return 0;
-
     // check args
     if (argc <= 1)
         ERROR("No file pass as arg")
@@ -49,7 +92,7 @@ int main(size_t argc, char* argv[])
     char* rawText = readAllFile(argv[1]);
     INFO("raw txt:\n\n%s\n", rawText);
     
-    wired_vm_header_t header;
+    wired_vm_header_t header = {0};
 
     // stack and ram size
     size_t ok;
@@ -78,27 +121,41 @@ int main(size_t argc, char* argv[])
     char buffer_base[64] = {0};
     char* buffer_current = buffer_base;
 
-    // translater state
 
+    // translater state
     char in_instruction = 0;
     size_t nb_args = 0;
-    long int instruction_id = 0;
+    long int instruction_addr = 0;
 
-    for (char* current = next; (*current) != '\0'; current++) {
-		
+    program_t program = {0};
+    
+    char* current = next;
+    char found_entry = 0;
+    int i = 0;
+    
+    while(current != NULL){
+
+        //INFO("%d", i)
+        i++;
+
         switch (*current) {
             
             // split chars
             case ' ': 
-            case '\t': 
+            case '\t':
+            case '\r': 
+            case '\0': 
+                if (buffer_base == buffer_current)
+                    break;
 
                 buffer_current = buffer_base;
                 if (!in_instruction) {
-                    // parse instruction buffer
+                    instruction_addr += parse_instruction(buffer_base, &program);
                     in_instruction = 1;
-                    nb_args = 1;
+                    nb_args = 0;
+                
                 } else {
-                    // parse args
+                    (*program.operations[program.len-1].parse_args)(buffer_base, nb_args, &program.operations[program.len-1]);
                     nb_args++;
                 }
 
@@ -106,8 +163,12 @@ int main(size_t argc, char* argv[])
             
 
             case '\n': {
-                if (in_instruction) {
-                    // parse_args
+                if (buffer_base == buffer_current)
+                    break;
+
+                if (!in_instruction) {
+                    instruction_addr += parse_instruction(buffer_base, &program);
+                    in_instruction = 1;
                     nb_args++;
                 }
 
@@ -120,7 +181,14 @@ int main(size_t argc, char* argv[])
             case ':':
                 buffer_current = '\0';
                 table_add_label(buffer_base);
+                table_add_adrr(buffer_base, instruction_addr);
                 buffer_current = buffer_base;
+
+                // add entry point
+                if (strcmp(buffer_base, "ENTRY") == 0) {         
+                    header.entry_point = instruction_addr;
+                    found_entry = 1;
+                }
 
                 break;
 
@@ -132,13 +200,28 @@ int main(size_t argc, char* argv[])
                 buffer_current++;
         }
         
+        if (*current == '\0') {
+            current = NULL;
+            continue;
+        }
+
         *buffer_current = '\0';
         INFO("current = '%c', buffer = '%s'", *current, buffer_base)
+        current = (current==NULL) ? NULL : current+1;
     }
 
     // set label
 
 
+    // check entry
+    if (!found_entry)
+        ERROR("did not find the entry point, please set a 'ENTRY:' lable")
+
+    // write programm
+    
+
+
     INFO("ENDED")
     return 1;
 }
+

@@ -33,6 +33,31 @@ size_t hash_label(char label[64]) {
     return hash%HASHMAP_SIZE;
 }
 
+
+hash_map_t* find_hash_label(char label[64]) {
+    size_t hash = hash_label(label);
+
+    hash_map_t* instance = &hash_map[hash];
+    hash_map_t* current_instance = instance;
+
+    char found = 0;
+    while(!found && current_instance != NULL) {
+
+        if (current_instance->used && 
+            strcmp(label, current_instance->label) == 0) {
+            found = 1;
+            continue;
+        }
+        current_instance = current_instance->next;
+    }
+
+    if (found) 
+        return current_instance;
+    
+    return NULL;
+}
+
+
 void table_add_label(char label[64]) {
 
     size_t hash = hash_label(label);
@@ -87,6 +112,14 @@ void table_add_label(char label[64]) {
         ERROR("can't copy the label")
 }
 
+void table_add_adrr(char label[64], long adrr) {
+
+    hash_map_t* element = find_hash_label(label);
+    if (label== NULL)
+        ERROR("can't find the lable: '%s'", label)
+
+    element->addr = adrr;
+}
 
 #endif
 #endif

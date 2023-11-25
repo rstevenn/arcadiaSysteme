@@ -49,9 +49,20 @@ typedef union {
 } instruction_args_t;
 
 
-typedef struct {
+typedef struct _operation_t operation_t;
+typedef void(parse_args_t)(char* buffer, int id, operation_t* op);
+
+struct _operation_t{
     uint16_t type;
     instruction_args_t args;
-} operation_t;
+    parse_args_t* parse_args;
+};
+
+
+typedef struct  _program_t {
+    
+    size_t len;
+    operation_t* operations;
+} program_t;
 
 #endif
