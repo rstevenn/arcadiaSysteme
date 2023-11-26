@@ -26,7 +26,18 @@ typedef enum {
     LOADA_INST = 0x03,
 
     SAVE_INST = 0x04,
+    SAVEI_INST = 0x05,
+    SAVEA_INST = 0x06,
+    SAVEAI_INST = 0x07,
 
+    ADD_INSTR = 0x08,
+    ADDI_INSTR = 0x09,
+    MIN_INSTR = 0x0a,
+    MINI_INSTR = 0x0b,
+    MULT_INSTR = 0x0c,
+    MULTI_INSTR = 0x0d,
+    DIV_INSTR = 0x0e,
+    DIVI_INSTR = 0x0f,
 
 } instruction_t;
 
@@ -42,6 +53,13 @@ typedef enum {
     REISTRY_NB
 } registry_t;
 
+typedef enum {
+    inst_128,
+    inst_192,
+    inst_256,
+    inst_jmp
+
+} raw_instr_type;
 
 ///
 // args
@@ -97,7 +115,7 @@ typedef void(parse_args_t)(char* buffer, int id, operation_t* op);
 
 struct _operation_t{
     uint16_t type;
-    uint64_t size;
+    raw_instr_type size;
     instruction_args_t args;
     parse_args_t* parse_args;
 };

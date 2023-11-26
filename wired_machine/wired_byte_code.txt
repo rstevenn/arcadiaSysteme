@@ -24,8 +24,8 @@ typedef struct {
 0x07    saveai  addr  val  // save the value val in the adresse addr
 
 // math
-0x08    add   ra, rb, rc   // *rb + *rc => *ra
-0x09    addi  ra, rb, val  // *rb + val => *ra
+0x08    add   ra rb rc   // *rb + *rc => *ra
+0x09    addi  ra rb val  // *rb + val => *ra
 
 0x0a    min   ra rb rc     // *rb - *rc => *ra
 0x0b    mini  ra rb val    // *rb - val => *ra

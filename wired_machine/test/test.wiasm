@@ -9,4 +9,17 @@ ENTRY:
     loada ra 0xFFFFF
 
     save ra rb
+    savei ra 128
+    savea  0xFFFFF ra
+    saveai 0xFFFFF 0128
+
+    add   ra rb rc
+    addi  ra rb 128
+    min   ra rb rc
+    mini  ra rb 128
+    mult  ra rb rc
+    multi ra rb 128
+    div   ra rb rc
+    divi  ra rb 128
+
     

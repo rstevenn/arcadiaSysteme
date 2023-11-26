@@ -13,15 +13,10 @@ void parse_load_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id > 1)
         ERROR("Too much args for a LOAD instr")
 
-    registry_t reg = buffer_to_register(buffer);
-    if (reg < 0)
-        ERROR("Can't parse args for LOAD INST")
-
-
     if (id == 0)
-        op->args.arg_128.arg0 = reg;
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = reg;
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
 }
 
 void parse_loadi_arg(char* buffer, unsigned int id, operation_t* op) {
@@ -48,17 +43,137 @@ void parse_save_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id > 1)
         ERROR("Too much args for a SAVE instr")
 
-    registry_t reg = buffer_to_register(buffer);
-    if (reg < 0)
-        ERROR("Can't parse args for SAVE INST")
-
-
     if (id == 0)
-        op->args.arg_128.arg0 = reg;
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = reg;
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
 }
 
+void parse_savei_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 1)
+        ERROR("Too much args for a SAVEI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_savea_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 1)
+        ERROR("Too much args for a SAVEA instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_hexnb(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_saveai_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 1)
+        ERROR("Too much args for a SAVEA instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_hexnb(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_add_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a ADD instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_addi_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a ADDI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
+
+void parse_min_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a MIN instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_mini_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a MINI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
+
+void parse_mult_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a MULT instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_multi_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a MULTI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
+
+void parse_div_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a DIV instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_divi_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a DIVI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
 
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm){
@@ -68,7 +183,7 @@ size_t parse_instruction(char* buffer, program_t* pgm){
         operation_t op;
         op.type = SCALL_INST;
         op.parse_args = (parse_args_t*)&parse_scall_arg;
-        op.size = sizeof(raw_128_op);
+        op.size = inst_128;
 
         insert_instruction(pgm, op);
         return sizeof(raw_128_op);
@@ -80,7 +195,7 @@ size_t parse_instruction(char* buffer, program_t* pgm){
         operation_t op;
         op.type = LOAD_INST;
         op.parse_args = (parse_args_t*)&parse_load_arg;
-        op.size = sizeof(raw_192_op);
+        op.size = inst_192;
 
         insert_instruction(pgm, op);
         return sizeof(raw_192_op);
@@ -92,7 +207,7 @@ size_t parse_instruction(char* buffer, program_t* pgm){
         operation_t op;
         op.type = LOADI_INST;
         op.parse_args = (parse_args_t*)&parse_loadi_arg;
-        op.size = sizeof(raw_192_op);
+        op.size = inst_192;
 
         insert_instruction(pgm, op);
         return sizeof(raw_192_op);
@@ -104,7 +219,7 @@ size_t parse_instruction(char* buffer, program_t* pgm){
         operation_t op;
         op.type = LOADA_INST;
         op.parse_args = (parse_args_t*)&parse_loada_arg;
-        op.size = sizeof(raw_192_op);
+        op.size = inst_192;
 
         insert_instruction(pgm, op);
         return sizeof(raw_192_op);
@@ -116,14 +231,145 @@ size_t parse_instruction(char* buffer, program_t* pgm){
         operation_t op;
         op.type = SAVE_INST;
         op.parse_args = (parse_args_t*)&parse_save_arg;
-        op.size = sizeof(raw_192_op);
+        op.size = inst_192;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_192_op);
+    }
+
+    if (strcmp("savei", buffer) == 0) {
+
+        INFO("parsed savei")
+        operation_t op;
+        op.type = SAVEI_INST;
+        op.parse_args = (parse_args_t*)&parse_savei_arg;
+        op.size = inst_192;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_192_op);
+    }
+
+    if (strcmp("savea", buffer) == 0) {
+
+        INFO("parsed savea")
+        operation_t op;
+        op.type = SAVEA_INST;
+        op.parse_args = (parse_args_t*)&parse_savea_arg;
+        op.size = inst_192;
 
         insert_instruction(pgm, op);
         return sizeof(raw_192_op);
     }
     
-    ERROR("Can't parse '%s'", buffer)
-       
+    if (strcmp("saveai", buffer) == 0) {
+
+        INFO("parsed saveai")
+        operation_t op;
+        op.type = SAVEAI_INST;
+        op.parse_args = (parse_args_t*)&parse_saveai_arg;
+        op.size = inst_192;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_192_op);
+    }
+
+    if (strcmp("add", buffer) == 0) {
+
+        INFO("parsed add")
+        operation_t op;
+        op.type = ADD_INSTR;
+        op.parse_args = (parse_args_t*)&parse_add_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("addi", buffer) == 0) {
+
+        INFO("parsed addi")
+        operation_t op;
+        op.type = ADDI_INSTR;
+        op.parse_args = (parse_args_t*)&parse_addi_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("min", buffer) == 0) {
+
+        INFO("parsed min")
+        operation_t op;
+        op.type = MIN_INSTR;
+        op.parse_args = (parse_args_t*)&parse_min_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("mini", buffer) == 0) {
+
+        INFO("parsed mini")
+        operation_t op;
+        op.type = MINI_INSTR;
+        op.parse_args = (parse_args_t*)&parse_mini_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("mult", buffer) == 0) {
+
+        INFO("parsed mult")
+        operation_t op;
+        op.type = MULT_INSTR;
+        op.parse_args = (parse_args_t*)&parse_mult_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("multi", buffer) == 0) {
+
+        INFO("parsed multi")
+        operation_t op;
+        op.type = ADDI_INSTR;
+        op.parse_args = (parse_args_t*)&parse_multi_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("div", buffer) == 0) {
+
+        INFO("parsed div")
+        operation_t op;
+        op.type = MIN_INSTR;
+        op.parse_args = (parse_args_t*)&parse_div_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    if (strcmp("divi", buffer) == 0) {
+
+        INFO("parsed divi")
+        operation_t op;
+        op.type = MINI_INSTR;
+        op.parse_args = (parse_args_t*)&parse_divi_arg;
+        op.size = inst_256;
+
+        insert_instruction(pgm, op);
+        return sizeof(raw_256_op);
+    }
+
+    ERROR("Can't parse '%s'", buffer)   
 }   
 
 
@@ -141,6 +387,15 @@ void insert_instruction(program_t* pgm, operation_t op) {
     pgm->len++;
 }
 
+size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t fnc, size_t size) {
+    operation_t op;
+    op.type = type;
+    op.parse_args = (parse_args_t*)&parse_divi_arg;
+    op.size = inst_256;
+
+    insert_instruction(pgm, op);
+    return size;
+}
 
 registry_t buffer_to_register(char* buffer){
 
