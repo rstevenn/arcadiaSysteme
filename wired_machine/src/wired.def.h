@@ -15,9 +15,8 @@ typedef struct {
 
 // instructions data
 typedef enum {
-    SCALL_INST,
+    SCALL_INST = 0,
     LOAD_INST,
-    LOADI_INST,
 
     NB_INST
 } instruction_t;
@@ -45,10 +44,28 @@ typedef struct
 typedef union {
     inst_1_arg arg_64;
     inst_2_arg arg_128;
-    inst_3_arg arg_196;
+    inst_3_arg arg_192;
+    char* flag;
 } instruction_args_t;
 
+// raw opreations
+typedef struct  {
+    uint64_t op_code;
+    inst_1_arg args;
+} raw_128_op;
 
+typedef struct  {
+    uint64_t op_code;
+    inst_2_arg args;
+} raw_192_op;
+
+typedef struct  {
+    uint64_t op_code;
+    inst_3_arg args;
+} raw_256_op;
+
+
+// assembleur struct
 typedef struct _operation_t operation_t;
 typedef void(parse_args_t)(char* buffer, int id, operation_t* op);
 

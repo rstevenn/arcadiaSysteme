@@ -5,68 +5,29 @@
 #define __HASH_MAP_IMPL__
 #include "utils/hash_map.h"
 #include "utils/base_log.h"
+
 #include "wired.def.h"
+#include "parse_wiasm.h"
 
-
-void parse_scall_arg(char* buffer, unsigned int id, operation_t* op) {
-    if (id > 0)
-        ERROR("Too much args for a scall instr")
-
-    unsigned int nb = 0;
-    for (char* current=buffer; (*current) != '\0'; current++) {
-        if (*current < '0' || *current > '9') 
-            ERROR("Can't parse syscall number %s", buffer)
-
-        nb *= 10;
-        nb += *current-'0';
-    }
-
-    op->args.arg_64.arg0 = nb;
-}
-
-
-void insert_instruction(program_t* pgm, operation_t op) {
-    
-    pgm->operations = (operation_t*)realloc(pgm->operations, sizeof(operation_t) * (pgm->len + 1));
-    if (pgm->operations == NULL) 
-        ERROR("Can't allocate memory")
-    
-    operation_t* ok = (operation_t*)memcpy(&(pgm->operations[pgm->len]), &op, sizeof(op));
-    if (ok == NULL) 
-        ERROR("Can't copy data")
-
-    pgm->len++;
-}
 
 void render_pgm(operation_t* op, size_t* size_out, char* data_out){
 
     switch (op->type)
     {
-    case SCALL_INST:
-        *size_out = sizeof(operation_t);
-        CHECK_ALLOCATE(memcpy(data_out, op, sizeof(operation_t)), "can't copy instruction data");
+    case SCALL_INST:{
+        raw_128_op render_op;
+        render_op.op_code = 0;
+        render_op.args.arg0 = op->args.arg_64.arg0;
+
+        *size_out = sizeof(raw_128_op);
+        CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_128_op)), "can't copy instruction data");
         break;
-    
+    }
+
     default:
         ERROR("Unknow instruction with typeid %d", (int)op->type)
         break;
     }
-}
-
-size_t parse_instruction(char* buffer, program_t* pgm){
-    if (strcmp("scall", buffer) == 0) {
-
-        INFO("parsed scall")
-        operation_t op;
-        op.type = SCALL_INST;
-        op.parse_args = (parse_args_t*)&parse_scall_arg;
-
-        insert_instruction(pgm, op);
-    
-    } else {
-        WARNING("Can't parse '%s'", buffer)
-    }   
-    return sizeof(operation_t);
 }
 
 
@@ -134,7 +95,6 @@ int main(size_t argc, char* argv[])
     // instructions and build label table
     char buffer_base[64] = {0};
     char* buffer_current = buffer_base;
-
 
     // translater state
     char in_instruction = 0;

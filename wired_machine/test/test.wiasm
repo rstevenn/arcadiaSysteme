@@ -2,4 +2,5 @@ ram_size:  640000
 stack_size:40000
 
 ENTRY:
+    load  ra rb
     scall 0
