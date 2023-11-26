@@ -22,4 +22,11 @@ ENTRY:
     div   ra rb rc
     divi  ra rb 128
 
-    
+    and   ra rb rc
+    andi  ra rb 128
+    or    ra rb rc
+    ori   ra rb 128
+    xor    ra rb rc
+    xori   ra rb 128
+    not   ra rb 
+    noti   ra 128

@@ -15,10 +15,10 @@ typedef struct {
     uint64_t  entry_point;
 } wired_vm_header_t;
 
+
 ///
 // enumes
 ///
-
 typedef enum {
     SCALL_INST = 0x00,
     LOAD_INST  = 0x01,
@@ -38,6 +38,15 @@ typedef enum {
     MULTI_INST = 0x0d,
     DIV_INST = 0x0e,
     DIVI_INST = 0x0f,
+
+    AND_INST = 0x10,
+    ANDI_INST = 0x11,
+    OR_INST = 0x12,
+    ORI_INST = 0x13,
+    XOR_INST = 0x14,
+    XORI_INST = 0x15,
+    NOT_INST = 0x16,
+    NOTI_INST = 0x17,
 
 } instruction_t;
 
@@ -60,6 +69,7 @@ typedef enum {
     inst_jmp
 
 } raw_instr_type;
+
 
 ///
 // args

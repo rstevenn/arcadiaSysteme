@@ -28,6 +28,14 @@ void parse_multi_arg(char* buffer, unsigned int id, operation_t* op);
 void parse_div_arg(char* buffer, unsigned int id, operation_t* op);
 void parse_divi_arg(char* buffer, unsigned int id, operation_t* op);
 
+void parse_and_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_andi_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_or_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_ori_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_xor_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_xori_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_not_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_noti_arg(char* buffer, unsigned int id, operation_t* op);
 
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm);

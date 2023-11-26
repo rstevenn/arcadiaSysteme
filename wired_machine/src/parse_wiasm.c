@@ -175,6 +175,98 @@ void parse_divi_arg(char* buffer, unsigned int id, operation_t* op){
         op->args.arg_192.arg2 = buffer_to_nb(buffer);
 }
 
+void parse_and_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a AND instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_andi_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a ANDI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
+
+void parse_or_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a OR instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_ori_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a ORI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
+
+void parse_xor_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a XOR instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_register(buffer);
+}
+
+void parse_xori_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 2)
+        ERROR("Too much args for a XORI instr")
+
+    if (id == 0)
+        op->args.arg_192.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_192.arg1 = buffer_to_register(buffer);
+    if (id==2)
+        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+}
+
+void parse_not_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a XOR instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_noti_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a XORI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm){
     if (strcmp("scall", buffer) == 0) {
@@ -304,6 +396,71 @@ size_t parse_instruction(char* buffer, program_t* pgm){
                                 (parse_args_t*)&parse_divi_arg,
                                 inst_256);
     }
+
+    if (strcmp("and", buffer) == 0) {
+
+        INFO("parsed and")
+        return new_instruction(pgm, AND_INST,
+                                (parse_args_t*)&parse_and_arg,
+                                inst_256);
+    }
+
+    if (strcmp("andi", buffer) == 0) {
+
+        INFO("parsed andi")
+        return new_instruction(pgm, ANDI_INST,
+                                (parse_args_t*)&parse_andi_arg,
+                                inst_256);
+    }
+
+    if (strcmp("or", buffer) == 0) {
+
+        INFO("parsed or")
+        return new_instruction(pgm, OR_INST,
+                                (parse_args_t*)&parse_or_arg,
+                                inst_256);
+    }
+
+    if (strcmp("ori", buffer) == 0) {
+
+        INFO("parsed ori")
+        return new_instruction(pgm, ORI_INST,
+                                (parse_args_t*)&parse_ori_arg,
+                                inst_256);
+    }
+
+    if (strcmp("xor", buffer) == 0) {
+
+        INFO("parsed xor")
+        return new_instruction(pgm, XOR_INST,
+                                (parse_args_t*)&parse_xor_arg,
+                                inst_256);
+    }
+
+    if (strcmp("xori", buffer) == 0) {
+
+        INFO("parsed xori")
+        return new_instruction(pgm, XORI_INST,
+                                (parse_args_t*)&parse_xori_arg,
+                                inst_256);
+    }
+
+    if (strcmp("not", buffer) == 0) {
+
+        INFO("parsed not")
+        return new_instruction(pgm, NOT_INST,
+                                (parse_args_t*)&parse_not_arg,
+                                inst_192);
+    }
+
+    if (strcmp("noti", buffer) == 0) {
+
+        INFO("parsed noti")
+        return new_instruction(pgm, NOTI_INST,
+                                (parse_args_t*)&parse_noti_arg,
+                                inst_192);
+    }
+
 
     ERROR("Can't parse '%s'", buffer)   
 }   
