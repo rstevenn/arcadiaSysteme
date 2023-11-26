@@ -30,14 +30,14 @@ typedef enum {
     SAVEA_INST = 0x06,
     SAVEAI_INST = 0x07,
 
-    ADD_INSTR = 0x08,
-    ADDI_INSTR = 0x09,
-    MIN_INSTR = 0x0a,
-    MINI_INSTR = 0x0b,
-    MULT_INSTR = 0x0c,
-    MULTI_INSTR = 0x0d,
-    DIV_INSTR = 0x0e,
-    DIVI_INSTR = 0x0f,
+    ADD_INST = 0x08,
+    ADDI_INST = 0x09,
+    MIN_INST = 0x0a,
+    MINI_INST = 0x0b,
+    MULT_INST = 0x0c,
+    MULTI_INST = 0x0d,
+    DIV_INST = 0x0e,
+    DIVI_INST = 0x0f,
 
 } instruction_t;
 

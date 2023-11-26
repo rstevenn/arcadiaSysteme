@@ -180,193 +180,129 @@ size_t parse_instruction(char* buffer, program_t* pgm){
     if (strcmp("scall", buffer) == 0) {
 
         INFO("parsed scall")
-        operation_t op;
-        op.type = SCALL_INST;
-        op.parse_args = (parse_args_t*)&parse_scall_arg;
-        op.size = inst_128;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_128_op);
+        return new_instruction(pgm, SCALL_INST,
+                               (parse_args_t*)&parse_scall_arg, 
+                               inst_128);
     } 
 
     if (strcmp("load", buffer) == 0) {
 
         INFO("parsed load")
-        operation_t op;
-        op.type = LOAD_INST;
-        op.parse_args = (parse_args_t*)&parse_load_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, LOAD_INST,
+                                (parse_args_t*)&parse_load_arg,
+                                inst_192);
     }
 
     if (strcmp("loadi", buffer) == 0) {
 
         INFO("parsed loadi")
-        operation_t op;
-        op.type = LOADI_INST;
-        op.parse_args = (parse_args_t*)&parse_loadi_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, LOADI_INST,
+                                (parse_args_t*)&parse_loadi_arg,
+                                inst_192);
     }
 
     if (strcmp("loada", buffer) == 0) {
 
         INFO("parsed loada")
-        operation_t op;
-        op.type = LOADA_INST;
-        op.parse_args = (parse_args_t*)&parse_loada_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, LOADA_INST,
+                                (parse_args_t*)&parse_loada_arg,
+                                inst_192);
     }
 
     if (strcmp("save", buffer) == 0) {
 
         INFO("parsed save")
-        operation_t op;
-        op.type = SAVE_INST;
-        op.parse_args = (parse_args_t*)&parse_save_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, SAVE_INST,
+                                (parse_args_t*)&parse_save_arg,
+                                inst_192);
     }
 
     if (strcmp("savei", buffer) == 0) {
 
         INFO("parsed savei")
-        operation_t op;
-        op.type = SAVEI_INST;
-        op.parse_args = (parse_args_t*)&parse_savei_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, SAVEI_INST,
+                                (parse_args_t*)&parse_savei_arg,
+                                inst_192);
     }
 
     if (strcmp("savea", buffer) == 0) {
 
         INFO("parsed savea")
-        operation_t op;
-        op.type = SAVEA_INST;
-        op.parse_args = (parse_args_t*)&parse_savea_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, SAVEA_INST,
+                                (parse_args_t*)&parse_savea_arg,
+                                inst_192);
     }
     
     if (strcmp("saveai", buffer) == 0) {
 
         INFO("parsed saveai")
-        operation_t op;
-        op.type = SAVEAI_INST;
-        op.parse_args = (parse_args_t*)&parse_saveai_arg;
-        op.size = inst_192;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_192_op);
+        return new_instruction(pgm, SAVEAI_INST,
+                                (parse_args_t*)&parse_saveai_arg,
+                                inst_192);
     }
 
     if (strcmp("add", buffer) == 0) {
 
         INFO("parsed add")
-        operation_t op;
-        op.type = ADD_INSTR;
-        op.parse_args = (parse_args_t*)&parse_add_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, ADD_INST,
+                                (parse_args_t*)&parse_add_arg,
+                                inst_256);
     }
 
     if (strcmp("addi", buffer) == 0) {
 
         INFO("parsed addi")
-        operation_t op;
-        op.type = ADDI_INSTR;
-        op.parse_args = (parse_args_t*)&parse_addi_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, ADDI_INST,
+                                (parse_args_t*)&parse_addi_arg,
+                                inst_256);
     }
 
     if (strcmp("min", buffer) == 0) {
 
         INFO("parsed min")
-        operation_t op;
-        op.type = MIN_INSTR;
-        op.parse_args = (parse_args_t*)&parse_min_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, MIN_INST,
+                                (parse_args_t*)&parse_min_arg,
+                                inst_256);
     }
 
     if (strcmp("mini", buffer) == 0) {
 
         INFO("parsed mini")
-        operation_t op;
-        op.type = MINI_INSTR;
-        op.parse_args = (parse_args_t*)&parse_mini_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, MINI_INST,
+                                (parse_args_t*)&parse_mini_arg,
+                                inst_256);
     }
 
     if (strcmp("mult", buffer) == 0) {
 
         INFO("parsed mult")
-        operation_t op;
-        op.type = MULT_INSTR;
-        op.parse_args = (parse_args_t*)&parse_mult_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, MULT_INST,
+                                (parse_args_t*)&parse_mult_arg,
+                                inst_256);
     }
 
     if (strcmp("multi", buffer) == 0) {
 
         INFO("parsed multi")
-        operation_t op;
-        op.type = ADDI_INSTR;
-        op.parse_args = (parse_args_t*)&parse_multi_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, MULTI_INST,
+                                (parse_args_t*)&parse_multi_arg,
+                                inst_256);
     }
 
     if (strcmp("div", buffer) == 0) {
 
         INFO("parsed div")
-        operation_t op;
-        op.type = MIN_INSTR;
-        op.parse_args = (parse_args_t*)&parse_div_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, DIV_INST,
+                                (parse_args_t*)&parse_div_arg,
+                                inst_256);
     }
 
     if (strcmp("divi", buffer) == 0) {
 
         INFO("parsed divi")
-        operation_t op;
-        op.type = MINI_INSTR;
-        op.parse_args = (parse_args_t*)&parse_divi_arg;
-        op.size = inst_256;
-
-        insert_instruction(pgm, op);
-        return sizeof(raw_256_op);
+        return new_instruction(pgm, DIVI_INST,
+                                (parse_args_t*)&parse_divi_arg,
+                                inst_256);
     }
 
     ERROR("Can't parse '%s'", buffer)   
@@ -387,14 +323,22 @@ void insert_instruction(program_t* pgm, operation_t op) {
     pgm->len++;
 }
 
-size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t fnc, size_t size) {
+size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, raw_instr_type raw_instr_type) {
     operation_t op;
     op.type = type;
-    op.parse_args = (parse_args_t*)&parse_divi_arg;
-    op.size = inst_256;
+    op.parse_args = fnc;
+    op.size = raw_instr_type;
 
     insert_instruction(pgm, op);
-    return size;
+    
+    if (raw_instr_type==inst_128)
+        return sizeof(raw_128_op);
+
+    if (raw_instr_type==inst_192)
+        return sizeof(raw_192_op);
+    
+    if (raw_instr_type==inst_256)
+        return sizeof(raw_256_op);
 }
 
 registry_t buffer_to_register(char* buffer){

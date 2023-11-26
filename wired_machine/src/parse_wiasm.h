@@ -35,6 +35,7 @@ size_t parse_instruction(char* buffer, program_t* pgm);
 
 // helpers
 void insert_instruction(program_t* pgm, operation_t op);
+size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, raw_instr_type raw_instr_type);
 
 registry_t buffer_to_register(char* buffer);
 unsigned int buffer_to_nb(char* buffer);

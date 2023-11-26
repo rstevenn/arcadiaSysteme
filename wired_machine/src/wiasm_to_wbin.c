@@ -40,7 +40,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
         render_op.op_code = op->type;
         render_op.args.arg0 = op->args.arg_192.arg0;
         render_op.args.arg1 = op->args.arg_192.arg1;
-        render_op.args.arg2 = op->args.arg_192.arg1;
+        render_op.args.arg2 = op->args.arg_192.arg2;
 
         *size_out = sizeof(raw_256_op);
         CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_256_op)), "can't copy instruction data");
