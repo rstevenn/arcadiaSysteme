@@ -2,5 +2,11 @@ ram_size:  640000
 stack_size:40000
 
 ENTRY:
-    load  ra rb
     scall 0
+    
+    load  ra rb
+    loadi ra 128
+    loada ra 0xFFFFF
+
+    save ra rb
+    

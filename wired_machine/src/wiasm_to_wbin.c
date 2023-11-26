@@ -12,11 +12,11 @@
 
 void render_pgm(operation_t* op, size_t* size_out, char* data_out){
 
-    switch (op->type)
+    switch (op->size)
     {
-    case SCALL_INST:{
+    case sizeof(raw_128_op): {
         raw_128_op render_op;
-        render_op.op_code = 0;
+        render_op.op_code = op->type;
         render_op.args.arg0 = op->args.arg_64.arg0;
 
         *size_out = sizeof(raw_128_op);
@@ -24,8 +24,19 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
         break;
     }
 
+    case sizeof(raw_192_op): {
+        raw_192_op render_op;
+        render_op.op_code = op->type;
+        render_op.args.arg0 = op->args.arg_64.arg0;
+        render_op.args.arg1 = op->args.arg_128.arg1;
+
+        *size_out = sizeof(raw_192_op);
+        CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_192_op)), "can't copy instruction data");
+        break;
+    }
+
     default:
-        ERROR("Unknow instruction with typeid %d", (int)op->type)
+        ERROR("Unknow instruction with size %lu", op->size)
         break;
     }
 }
@@ -137,17 +148,16 @@ int main(size_t argc, char* argv[])
             
 
             case '\n': {
-                if (buffer_base == buffer_current)
+                if (buffer_base == buffer_current && !in_instruction)
                     break;
 
                 if (!in_instruction) {
                     instruction_addr += parse_instruction(buffer_base, &program);
-                    in_instruction = 1;
-                    nb_args++;
                 }
 
                 buffer_current = buffer_base;
                 in_instruction = 0;
+                nb_args = 0;
                 break;
             }
 

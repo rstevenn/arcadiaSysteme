@@ -9,8 +9,12 @@
 
 // parse args
 void parse_scall_arg(char* buffer, unsigned int id, operation_t* op);
-void parse_load_arg(char* buffer, unsigned int id, operation_t* op);
 
+void parse_load_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_loadi_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_loada_arg(char* buffer, unsigned int id, operation_t* op);
+
+void parse_save_arg(char* buffer, unsigned int id, operation_t* op);
 
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm);
@@ -18,5 +22,9 @@ size_t parse_instruction(char* buffer, program_t* pgm);
 
 // helpers
 void insert_instruction(program_t* pgm, operation_t op);
+
+registry_t buffer_to_register(char* buffer);
+unsigned int buffer_to_nb(char* buffer);
+unsigned int buffer_to_hexnb(char* buffer);
 
 #endif
