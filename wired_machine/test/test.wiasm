@@ -1,4 +1,4 @@
-ram_size:640000
+ram_size:  640000
 stack_size:40000
 
 ENTRY:

@@ -14,7 +14,10 @@ typedef struct _hash_map {
     struct _hash_map* next;
 } hash_map_t;
 
-#define __HASH_MAP_IMPL__
+#ifndef __HASH_MAP_IMPL__
+extern hash_map_t* hash_map;
+#endif
+
 #ifdef __HASH_MAP_IMPL__
 
 #define HASHMAP_SIZE 256

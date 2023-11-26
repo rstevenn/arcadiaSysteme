@@ -38,6 +38,20 @@ void insert_instruction(program_t* pgm, operation_t op) {
     pgm->len++;
 }
 
+void render_pgm(operation_t* op, size_t* size_out, char* data_out){
+
+    switch (op->type)
+    {
+    case SCALL_INST:
+        *size_out = sizeof(operation_t);
+        CHECK_ALLOCATE(memcpy(data_out, op, sizeof(operation_t)), "can't copy instruction data");
+        break;
+    
+    default:
+        ERROR("Unknow instruction with typeid %d", (int)op->type)
+        break;
+    }
+}
 
 size_t parse_instruction(char* buffer, program_t* pgm){
     if (strcmp("scall", buffer) == 0) {
@@ -210,16 +224,31 @@ int main(size_t argc, char* argv[])
         current = (current==NULL) ? NULL : current+1;
     }
 
-    // set label
-
 
     // check entry
     if (!found_entry)
         ERROR("did not find the entry point, please set a 'ENTRY:' lable")
 
-    // write programm
-    
+    // write program
+    FILE* fp = fopen("out.wbin", "wb");
+    if (fp == NULL)
+        ERROR("can't open/create the output file")
 
+    if (1 != fwrite(&header, sizeof(header), 1, fp))
+        ERROR("can't write header")
+
+    for (size_t i=0; i<program.len; i++) { 
+        size_t size_out=0;
+        char data_out[1024];
+        operation_t op = program.operations[i];
+
+        render_pgm(&op, &size_out, (char *)&data_out);
+
+        if (1 != fwrite(data_out, size_out, 1, fp))
+            ERROR("can't wriet instructions")
+    }
+
+    fclose(fp);
 
     INFO("ENDED")
     return 1;
