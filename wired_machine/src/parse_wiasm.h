@@ -52,6 +52,19 @@ void parse_lti_arg(char* buffer, unsigned int id, operation_t* op);
 void parse_lte_arg(char* buffer, unsigned int id, operation_t* op);
 void parse_ltei_arg(char* buffer, unsigned int id, operation_t* op);
 
+void parse_jre_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jrei_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jeq_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jeqi_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jne_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jnei_arg(char* buffer, unsigned int id, operation_t* op);
+
+void parse_jmp_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jmpi_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jmp_th_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_jmp_thi_arg(char* buffer, unsigned int id, operation_t* op);
+
+
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm);
 
@@ -63,5 +76,6 @@ size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, ra
 registry_t buffer_to_register(char* buffer);
 unsigned int buffer_to_nb(char* buffer);
 unsigned int buffer_to_hexnb(char* buffer);
+int is_hexnb(char* buffer);
 
 #endif

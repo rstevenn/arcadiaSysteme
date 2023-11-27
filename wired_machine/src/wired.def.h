@@ -63,7 +63,17 @@ typedef enum {
     LTE_INST = 0x22,
     LTEI_INST = 0x23,
 
-    
+    JRE_INST = 0x24,
+    JREI_INST = 0x25,
+    JEQ_INST = 0x26,
+    JEQI_INST = 0x27,
+    JNE_INST = 0x28,
+    JNEI_INST = 0x29,
+
+    JMP_INST = 0x2a,
+    JMPI_INST = 0x2b,
+    JMP_TH_INST = 0x2c,
+    JMP_THI_INST = 0x2d,
 
 } instruction_t;
 

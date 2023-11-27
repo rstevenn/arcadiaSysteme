@@ -47,6 +47,23 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
         break;
     }
 
+    case inst_jmp: {
+
+        raw_128_op render_op;
+        hash_map_t* map = find_hash_label(op->args.flag);
+        
+        if (map == NULL)
+            ERROR("can't find lable '%s'", op->args.flag)
+
+        render_op.op_code = op->type;
+        render_op.args.arg0 = find_hash_label(op->args.flag)->addr;
+
+        *size_out = sizeof(raw_128_op);
+        CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_128_op)), "can't copy instruction data");
+        
+        break;
+    }
+
     default:
         ERROR("Unknow instruction with type %lu", op->size)
         break;

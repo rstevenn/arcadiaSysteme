@@ -79,8 +79,8 @@ typedef struct {
 0x2a    jmp  ra            // *ra  => $pc
 0x2b    jmpi addr          // addr => $pc
 
-0x2c    jump_th ra         // create a new thread with the entry point at *ra
-0x2d    jump_thi addr      // create a new thread with the entry point at addr
+0x2c    jmp_th ra         // create a new thread with the entry point at *ra
+0x2d    jmp_thi addr      // create a new thread with the entry point at addr
 
 
 // registery

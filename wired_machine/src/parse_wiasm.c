@@ -387,6 +387,110 @@ void parse_ltei_arg(char* buffer, unsigned int id, operation_t* op){
         op->args.arg_128.arg1 = buffer_to_nb(buffer);
 }
 
+void parse_jre_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JRE instr")
+
+    op->args.arg_64.arg0 = buffer_to_register(buffer);
+}
+
+void parse_jrei_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JREI instr")
+
+    if (is_hexnb(buffer)) {
+        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+    } else {
+        if (strcpy(op->args.flag, buffer) == NULL) 
+            ERROR("Can't copy flag")
+    
+        op->size = inst_jmp;
+    }
+}
+
+void parse_jeq_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JEQ instr")
+
+    op->args.arg_64.arg0 = buffer_to_register(buffer);
+}
+
+void parse_jeqi_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JEQI instr")
+
+    if (is_hexnb(buffer)) {
+        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+    } else {
+        if (strcpy(op->args.flag, buffer) == NULL) 
+            ERROR("Can't copy flag")
+    
+        op->size = inst_jmp;
+    }
+}
+
+void parse_jne_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JNE instr")
+
+    op->args.arg_64.arg0 = buffer_to_register(buffer);
+}
+
+void parse_jnei_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JENI instr")
+
+    if (is_hexnb(buffer)) {
+        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+    } else {
+        if (strcpy(op->args.flag, buffer) == NULL) 
+            ERROR("Can't copy flag")
+    
+        op->size = inst_jmp;
+    }
+}
+
+void parse_jmp_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JMP instr")
+
+    op->args.arg_64.arg0 = buffer_to_register(buffer);
+}
+
+void parse_jmpi_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JMPI instr")
+
+    if (is_hexnb(buffer)) {
+        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+    } else {
+        if (strcpy(op->args.flag, buffer) == NULL) 
+            ERROR("Can't copy flag")
+    
+        op->size = inst_jmp;
+    }
+}
+
+void parse_jmp_th_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JMPTH instr")
+
+    op->args.arg_64.arg0 = buffer_to_register(buffer);
+}
+
+void parse_jmp_thi_arg(char* buffer, unsigned int id, operation_t* op) {
+    if (id > 0)
+        ERROR("Too much args for a JMP THI instr")
+
+    if (is_hexnb(buffer)) {
+        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+    } else {
+        if (strcpy(op->args.flag, buffer) == NULL) 
+            ERROR("Can't copy flag")
+    
+        op->size = inst_jmp;
+    }
+}
 
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm){
@@ -678,6 +782,86 @@ size_t parse_instruction(char* buffer, program_t* pgm){
                                 inst_192);
     }
 
+    if (strcmp("jre", buffer) == 0) {
+
+        INFO("parsed jre")
+        return new_instruction(pgm, JRE_INST,
+                                (parse_args_t*)&parse_jre_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jrei", buffer) == 0) {
+
+        INFO("parsed jrei")
+        return new_instruction(pgm, JREI_INST,
+                                (parse_args_t*)&parse_jrei_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jeq", buffer) == 0) {
+
+        INFO("parsed jeq")
+        return new_instruction(pgm, JEQ_INST,
+                                (parse_args_t*)&parse_jeq_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jeqi", buffer) == 0) {
+
+        INFO("parsed jeqi")
+        return new_instruction(pgm, JEQI_INST,
+                                (parse_args_t*)&parse_jeqi_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jne", buffer) == 0) {
+
+        INFO("parsed jne")
+        return new_instruction(pgm, JNE_INST,
+                                (parse_args_t*)&parse_jne_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jnei", buffer) == 0) {
+
+        INFO("parsed jnei")
+        return new_instruction(pgm, JNEI_INST,
+                                (parse_args_t*)&parse_jnei_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jmp", buffer) == 0) {
+
+        INFO("parsed jmp")
+        return new_instruction(pgm, JMP_INST,
+                                (parse_args_t*)&parse_jmp_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jmpi", buffer) == 0) {
+
+        INFO("parsed jmpi")
+        return new_instruction(pgm, JMPI_INST,
+                                (parse_args_t*)&parse_jmpi_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jmp_th", buffer) == 0) {
+
+        INFO("parsed jmp_th")
+        return new_instruction(pgm, JMP_TH_INST,
+                                (parse_args_t*)&parse_jmp_th_arg,
+                                inst_128);
+    }
+
+    if (strcmp("jmp_thi", buffer) == 0) {
+
+        INFO("parsed jmp_thi")
+        return new_instruction(pgm, JMP_THI_INST,
+                                (parse_args_t*)&parse_jmp_thi_arg,
+                                inst_128);
+    }
+
     ERROR("Can't parse '%s'", buffer)   
 }   
 
@@ -783,4 +967,23 @@ unsigned int buffer_to_hexnb(char* buffer) {
     }
 
     return nb;
+}
+
+int is_hexnb(char* buffer) {
+    
+    if(*buffer != '0' || *(buffer+1) != 'x') {
+        return 0;
+    }
+
+    buffer += 2;
+
+    for (char* current=buffer; (*current) != '\0'; current++) {
+        if (!((*current >= '0' && *current <= '9') || 
+              (*current >= 'A' && *current <= 'F') ||
+              (*current >= 'a' && *current <= 'f') )) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
