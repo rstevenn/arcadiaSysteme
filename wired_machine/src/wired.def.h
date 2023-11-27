@@ -86,7 +86,7 @@ typedef enum {
     RA, RB, RC, RD, 
     RE, RF, RG, RH,
 
-    REISTRY_NB
+    REGISTERS_NB
 } registry_t;
 
 typedef enum {

@@ -108,6 +108,11 @@ int main(size_t argc, char* argv[])
     INFO("raw txt:\n\n%s\n", rawText);
     
     wired_vm_header_t header = {0};
+    header.identificator[0] = 'W';
+    header.identificator[1] = 'I';
+    header.identificator[2] = 'R';
+    header.identificator[3] = 'E';
+    header.identificator[4] = '\0';
 
     // stack and ram size
     size_t ok;
