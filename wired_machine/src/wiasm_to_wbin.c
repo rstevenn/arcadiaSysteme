@@ -48,7 +48,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
     }
 
     default:
-        ERROR("Unknow instruction with size %lu", op->size)
+        ERROR("Unknow instruction with type %lu", op->size)
         break;
     }
 }

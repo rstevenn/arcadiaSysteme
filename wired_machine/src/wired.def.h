@@ -48,6 +48,23 @@ typedef enum {
     NOT_INST = 0x16,
     NOTI_INST = 0x17,
 
+    EQ_INST = 0x18,
+    EQI_INST = 0x19,
+    NEQ_INST = 0x1a,
+    NEQI_INST = 0x1b,
+
+    GT_INST = 0x1c,
+    GTI_INST = 0x1d,
+    GTE_INST = 0x1e,
+    GTEI_INST = 0x1f,
+
+    LT_INST = 0x20,
+    LTI_INST = 0x21,
+    LTE_INST = 0x22,
+    LTEI_INST = 0x23,
+
+    
+
 } instruction_t;
 
 typedef enum {

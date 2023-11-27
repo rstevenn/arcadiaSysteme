@@ -26,7 +26,22 @@ ENTRY:
     andi  ra rb 128
     or    ra rb rc
     ori   ra rb 128
-    xor    ra rb rc
-    xori   ra rb 128
+    xor   ra rb rc
+    xori  ra rb 128
     not   ra rb 
-    noti   ra 128
+    noti  ra 128
+
+    eq    ra rb
+    eqi   ra 128
+    neq   ra rb
+    neqi  ra 128
+
+    gt    ra rb
+    gti   ra 128
+    gte   ra rb
+    gtei  ra 128    
+
+    lt    ra rb
+    lti   ra 128
+    lte   ra rb
+    ltei  ra 128

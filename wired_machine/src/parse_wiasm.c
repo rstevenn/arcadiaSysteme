@@ -267,6 +267,127 @@ void parse_noti_arg(char* buffer, unsigned int id, operation_t* op){
         op->args.arg_128.arg1 = buffer_to_nb(buffer);
 }
 
+void parse_eq_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a EQ instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_eqi_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a EQI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_neq_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a NEQ instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_neqi_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a NEQI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_gt_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a GT instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_gti_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a GTI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_gte_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a GTE instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_gtei_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a GTEI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_lt_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a LT instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_lti_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a LTI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+void parse_lte_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a LTE instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_register(buffer);
+}
+
+void parse_ltei_arg(char* buffer, unsigned int id, operation_t* op){
+    if (id > 1)
+        ERROR("Too much args for a LTEI instr")
+
+    if (id == 0)
+        op->args.arg_128.arg0 = buffer_to_register(buffer);
+    if (id==1)
+        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+}
+
+
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm){
     if (strcmp("scall", buffer) == 0) {
@@ -461,6 +582,101 @@ size_t parse_instruction(char* buffer, program_t* pgm){
                                 inst_192);
     }
 
+    if (strcmp("eq", buffer) == 0) {
+
+        INFO("parsed eq")
+        return new_instruction(pgm, EQ_INST,
+                                (parse_args_t*)&parse_eq_arg,
+                                inst_192);
+    }
+
+    if (strcmp("eqi", buffer) == 0) {
+
+        INFO("parsed eqi")
+        return new_instruction(pgm, EQI_INST,
+                                (parse_args_t*)&parse_eqi_arg,
+                                inst_192);
+    }
+
+    if (strcmp("neq", buffer) == 0) {
+
+        INFO("parsed neq")
+        return new_instruction(pgm, NEQ_INST,
+                                (parse_args_t*)&parse_neq_arg,
+                                inst_192);
+    }
+
+    if (strcmp("neqi", buffer) == 0) {
+
+        INFO("parsed neqi")
+        return new_instruction(pgm, NEQI_INST,
+                                (parse_args_t*)&parse_neqi_arg,
+                                inst_192);
+    }
+
+    if (strcmp("gt", buffer) == 0) {
+
+        INFO("parsed gt")
+        return new_instruction(pgm, GT_INST,
+                                (parse_args_t*)&parse_gt_arg,
+                                inst_192);
+    }
+
+    if (strcmp("gti", buffer) == 0) {
+
+        INFO("parsed gti")
+        return new_instruction(pgm, GTI_INST,
+                                (parse_args_t*)&parse_gti_arg,
+                                inst_192);
+    }
+
+    if (strcmp("gte", buffer) == 0) {
+
+        INFO("parsed gte")
+        return new_instruction(pgm, GTE_INST,
+                                (parse_args_t*)&parse_gte_arg,
+                                inst_192);
+    }
+
+    if (strcmp("gtei", buffer) == 0) {
+
+        INFO("parsed gtei")
+        return new_instruction(pgm, GTEI_INST,
+                                (parse_args_t*)&parse_gtei_arg,
+                                inst_192);
+    }
+
+    if (strcmp("lt", buffer) == 0) {
+
+        INFO("parsed lt")
+        return new_instruction(pgm, LT_INST,
+                                (parse_args_t*)&parse_lt_arg,
+                                inst_192);
+    }
+
+    if (strcmp("lti", buffer) == 0) {
+
+        INFO("parsed lti")
+        return new_instruction(pgm, LTI_INST,
+                                (parse_args_t*)&parse_lti_arg,
+                                inst_192);
+    }
+
+    if (strcmp("lte", buffer) == 0) {
+
+        INFO("parsed lte")
+        return new_instruction(pgm, LTE_INST,
+                                (parse_args_t*)&parse_lte_arg,
+                                inst_192);
+    }
+
+    if (strcmp("ltei", buffer) == 0) {
+
+        INFO("parsed ltei")
+        return new_instruction(pgm, LTEI_INST,
+                                (parse_args_t*)&parse_ltei_arg,
+                                inst_192);
+    }
 
     ERROR("Can't parse '%s'", buffer)   
 }   

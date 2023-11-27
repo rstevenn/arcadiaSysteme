@@ -37,6 +37,21 @@ void parse_xori_arg(char* buffer, unsigned int id, operation_t* op);
 void parse_not_arg(char* buffer, unsigned int id, operation_t* op);
 void parse_noti_arg(char* buffer, unsigned int id, operation_t* op);
 
+void parse_eq_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_eqi_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_neq_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_neqi_arg(char* buffer, unsigned int id, operation_t* op);
+
+void parse_gt_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_gti_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_gte_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_gtei_arg(char* buffer, unsigned int id, operation_t* op);
+
+void parse_lt_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_lti_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_lte_arg(char* buffer, unsigned int id, operation_t* op);
+void parse_ltei_arg(char* buffer, unsigned int id, operation_t* op);
+
 // parse 1 insttruction
 size_t parse_instruction(char* buffer, program_t* pgm);
 

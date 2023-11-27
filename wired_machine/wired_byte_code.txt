@@ -46,41 +46,41 @@ typedef struct {
 0x14    xor   ra rb rc     // *rb ^ *rb => *ra 
 0x15    xori  ra rb val    // *rb ^ val => *ra 
 
-0x15    not   ra rb        // !(*rb) => ra  
-0x16    noti  ra val       // ! val  => ra
+0x16    not   ra rb        // !(*rb) => ra  
+0x17    noti  ra val       // ! val  => ra
 
 // comp
-0x17    eq    ra rb        // ( *ra == *rb ) => $eq
-0x18    eqi   ra val       // ( *ra == val ) => $eq
+0x18    eq    ra rb        // ( *ra == *rb ) => $eq
+0x19    eqi   ra val       // ( *ra == val ) => $eq
 
-0x19    neq   ra rb        // ( *ra != *rb ) => $eq 
-0x1a    neqi  ra val       // ( *ra != val ) => $eq
+0x1a    neq   ra rb        // ( *ra != *rb ) => $eq 
+0x1b    neqi  ra val       // ( *ra != val ) => $eq
 
-0x1b    gt    ra rb        // ( *ra > *rb )  => $eq 
-0x1c    gti   ra val       // ( *ra > val )  => $eq
-0x1d    gte   ra rb        // ( *ra >= *rb ) => $eq
-0x1e    gtei  ra val       // ( *ra >= val ) => $eq
+0x1c    gt    ra rb        // ( *ra > *rb )  => $eq 
+0x1d    gti   ra val       // ( *ra > val )  => $eq
+0x1e    gte   ra rb        // ( *ra >= *rb ) => $eq
+0x1f    gtei  ra val       // ( *ra >= val ) => $eq
 
-0x1f    lt    ra rb        // ( *ra < *rb )  => $eq
-0x20    lti   ra val       // ( *ra < val )  => $eq
-0x21    lte   ra rb        // ( *ra <= *rb ) => $eq
-0x22    ltei  ra val       // ( *ra <= val ) => $eq 
+0x20    lt    ra rb        // ( *ra < *rb )  => $eq
+0x21    lti   ra val       // ( *ra < val )  => $eq
+0x22    lte   ra rb        // ( *ra <= *rb ) => $eq
+0x23    ltei  ra val       // ( *ra <= val ) => $eq 
 
 // jumps
-0x23    jre  ra            // $pc + *ra  => $pc  
-0x24    jrei addr          // $pc + adrr => $pc
+0x24    jre  ra            // $pc + *ra  => $pc  
+0x25    jrei addr          // $pc + adrr => $pc
 
-0x25    jeq  ra            // *ra  => $pc if $eq != 0 
-0x26    jeqi addr          // addr => $pc if $eq != 0
+0x26    jeq  ra            // *ra  => $pc if $eq != 0 
+0x27    jeqi addr          // addr => $pc if $eq != 0
 
-0x27    jne  ra            // *ra  => $pc if $eq == 0
-0x28    jnei addr          // addr => $pc if $eq != 0
+0x28    jne  ra            // *ra  => $pc if $eq == 0
+0x29    jnei addr          // addr => $pc if $eq != 0
 
-0x29    jmp  ra            // *ra  => $pc
-0x2a    jmpi addr          // addr => $pc
+0x2a    jmp  ra            // *ra  => $pc
+0x2b    jmpi addr          // addr => $pc
 
-0x2b    jump_th ra         // create a new thread with the entry point at *ra
-0x2c    jump_thi addr      // create a new thread with the entry point at addr
+0x2c    jump_th ra         // create a new thread with the entry point at *ra
+0x2d    jump_thi addr      // create a new thread with the entry point at addr
 
 
 // registery
