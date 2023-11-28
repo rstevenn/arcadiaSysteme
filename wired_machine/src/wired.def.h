@@ -86,6 +86,9 @@ typedef enum {
     RA, RB, RC, RD, 
     RE, RF, RG, RH,
 
+    // hiden system regiters
+    SPL,
+
     REGISTERS_NB
 } registry_t;
 
@@ -94,6 +97,8 @@ typedef enum {
     inst_192,
     inst_256,
     inst_jmp
+    
+    
 
 } raw_instr_type;
 
@@ -128,17 +133,20 @@ typedef union {
 
 // raw opreations
 typedef struct  {
-    uint64_t op_code;
+    uint32_t op_code;
+    uint32_t op_size;
     inst_1_arg args;
 } raw_128_op;
 
 typedef struct  {
-    uint64_t op_code;
+    uint32_t op_code;
+    uint32_t op_size;
     inst_2_arg args;
 } raw_192_op;
 
 typedef struct  {
-    uint64_t op_code;
+    uint32_t op_code;
+    uint32_t op_size;
     inst_3_arg args;
 } raw_256_op;
 
@@ -163,5 +171,20 @@ typedef struct  _program_t {
     size_t len;
     operation_t* operations;
 } program_t;
+
+///
+// vm struct
+///
+
+typedef struct {
+    uint32_t op_code;
+    uint32_t op_size;
+} op_meta_t;
+
+typedef struct {
+    op_meta_t meta;
+    uint64_t args[3];
+} vm_op_t;
+
 
 #endif

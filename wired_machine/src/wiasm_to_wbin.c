@@ -17,6 +17,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
     case inst_128: {
         raw_128_op render_op;
         render_op.op_code = op->type;
+        render_op.op_size = inst_128;
         render_op.args.arg0 = op->args.arg_64.arg0;
 
         *size_out = sizeof(raw_128_op);
@@ -27,6 +28,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
     case inst_192: {
         raw_192_op render_op;
         render_op.op_code = op->type;
+        render_op.op_size = inst_192;
         render_op.args.arg0 = op->args.arg_128.arg0;
         render_op.args.arg1 = op->args.arg_128.arg1;
 
@@ -38,6 +40,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
     case inst_256: {
         raw_256_op render_op;
         render_op.op_code = op->type;
+        render_op.op_size = inst_256;
         render_op.args.arg0 = op->args.arg_192.arg0;
         render_op.args.arg1 = op->args.arg_192.arg1;
         render_op.args.arg2 = op->args.arg_192.arg2;
@@ -56,6 +59,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
             ERROR("can't find lable '%s'", op->args.flag)
 
         render_op.op_code = op->type;
+        render_op.op_size = inst_128;
         render_op.args.arg0 = find_hash_label(op->args.flag)->addr;
 
         *size_out = sizeof(raw_128_op);
