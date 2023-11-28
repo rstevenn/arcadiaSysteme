@@ -1,0 +1,1 @@
+gcc src/wiasm_to_wbin.c src/parse_wiasm.c -o bin/wiasm_to_bin.exe

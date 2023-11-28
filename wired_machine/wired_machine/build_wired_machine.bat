@@ -1,0 +1,1 @@
+gcc src/wired_machine.c -o bin/wired_machine.exe
