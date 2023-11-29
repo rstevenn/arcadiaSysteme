@@ -5,6 +5,10 @@
 #include "utils/base_log.h"
 #include "wired.def.h"
 
+#define SANITYZE_MEM 1
+#define SANITIZE_MATH 1
+
+
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
   FILE *fp = fopen(path, "rb");
@@ -41,7 +45,7 @@ int main(int argc, char *argv[]) {
   size_t file_size;
   char *rawText = readAllFile(argv[1], &file_size);
   char *current = rawText;
-  INFO("LOAD: '%s' %lu bits", argv[1], file_size)
+  INFO("LOAD: '%s' %lu bits", argv[1], file_size)
 
   // extract and sanitize header metadata
   if (file_size < sizeof(wired_vm_header_t))
@@ -150,6 +154,10 @@ int main(int argc, char *argv[]) {
 
     case (LOADA_INST): {
         INFO("LOADA")
+#if (SANITYZE_MEM == 1)
+        if (op.args[1] < 0 || op.args[1] > header.ram_size+1)
+          ERROR("Out of range adress 0x%04x", op.args[1])
+#endif 
         registers[op.args[0]] = *(vm_ram+op.args[1]);
         break;
     }
@@ -157,31 +165,222 @@ int main(int argc, char *argv[]) {
     // SAVE
     case (SAVE_INST): {
         INFO("SAVE")
+#if (SANITYZE_MEM == 1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+          ERROR("Out of range adress 0x%04x", op.args[1])
+#endif 
         *(vm_ram+registers[op.args[0]]) = registers[op.args[1]];
         break;
     }
 
     case (SAVEI_INST): {
         INFO("SAVEI")
+#if (SANITYZE_MEM == 1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+          ERROR("Out of range adress 0x%04x", op.args[1])
+#endif 
         *(vm_ram+registers[op.args[0]]) = op.args[1];
         break;
     }
     
     case (SAVEA_INST): {
         INFO("SAVEA")
+#if (SANITYZE_MEM == 1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+          ERROR("Out of range adress 0x%04x", op.args[1])
+#endif 
         *(vm_ram+op.args[0]) = registers[op.args[1]];
         break;
     }
 
     case (SAVEAI_INST): {
         INFO("SAVEAI")
+#if (SANITYZE_MEM == 1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+          ERROR("Out of range adress 0x%04x", op.args[1])
+#endif 
         *(vm_ram+op.args[0]) = op.args[1];
         break;
     }
 
+    // math
+    case (ADD_INST) : {
+      INFO("ADD")
+      registers[op.args[0]] = registers[op.args[1]] + registers[op.args[2]];
+      break;
+    }
 
+    case (ADDI_INST) : {
+      INFO("ADDI")
+      registers[op.args[0]] = registers[op.args[1]] + op.args[2];
+      break;
+    }
 
+    case (MIN_INST) : {
+      INFO("MIN")
+      registers[op.args[0]] = registers[op.args[1]] - registers[op.args[2]];
+      break;
+    }
 
+    case (MINI_INST) : {
+      INFO("MINI")
+      registers[op.args[0]] = registers[op.args[1]] - op.args[2];
+      break;
+    }
+
+    case (MULT_INST) : {
+      INFO("MULT")
+      registers[op.args[0]] = registers[op.args[1]] * registers[op.args[2]];
+      break;
+    }
+
+    case (MULTI_INST) : {
+      INFO("MULTI")
+      registers[op.args[0]] = registers[op.args[1]] * op.args[2];
+      break;
+    }
+
+    case (DIV_INST) : {
+      INFO("DIV")
+#if (SANITIZE_MATH == 1)
+        if (registers[op.args[2]] == 0)
+          ERROR("Divide by 0")
+#endif 
+      registers[op.args[0]] = registers[op.args[1]] / registers[op.args[2]];
+      break;
+    }
+
+    case (DIVI_INST) : {
+      INFO("DIVI")
+#if (SANITIZE_MATH == 1)
+        if (op.args[2] == 0)
+          ERROR("Divide by 0")
+#endif 
+      registers[op.args[0]] = registers[op.args[1]] / op.args[2];
+      break;
+    }
+
+    // logic
+    case (AND_INST) : {
+      INFO("AND")
+      registers[op.args[0]] = registers[op.args[1]] & registers[op.args[2]];
+      break;
+    }
+
+    case (ANDI_INST) : {
+      INFO("ANDI")
+      registers[op.args[0]] = registers[op.args[1]] & op.args[2];
+      break;
+    }
+
+    case (OR_INST) : {
+      INFO("OR")
+      registers[op.args[0]] = registers[op.args[1]] | registers[op.args[2]];
+      break;
+    }
+
+    case (ORI_INST) : {
+      INFO("ORI")
+      registers[op.args[0]] = registers[op.args[1]] | op.args[2];
+      break;
+    }
+
+    case (XOR_INST) : {
+      INFO("XOR")
+      registers[op.args[0]] = registers[op.args[1]] ^ registers[op.args[2]];
+      break;
+    }
+
+    case (XORI_INST) : {
+      INFO("XORI")
+      registers[op.args[0]] = registers[op.args[1]] ^ op.args[2];
+      break;
+    }
+
+    case (NOT_INST) : {
+      INFO("NOT")
+      registers[op.args[0]] = ~registers[op.args[1]];
+      break;
+    }
+
+    case (NOTI_INST) : {
+      INFO("NOTI")
+      registers[op.args[0]] = ~op.args[1];
+      break;
+    }
+
+    // comp
+    case (EQ_INST) : {
+      INFO("EQ")
+      registers[EQ] = (registers[op.args[0]] == registers[op.args[1]]);
+      break;
+    }
+
+    case (EQI_INST) : {
+      INFO("EQI")
+      registers[EQ] = (registers[op.args[0]] == op.args[1]);
+      break;
+    }
+
+    case (NEQ_INST) : {
+      INFO("NEQ")
+      registers[EQ] = (registers[op.args[0]] != registers[op.args[1]]);
+      break;
+    }
+
+    case (NEQI_INST) : {
+      INFO("NEQI")
+      registers[EQ] = (registers[op.args[0]] != op.args[1]);
+      break;
+    }
+
+    case (GT_INST) : {
+      INFO("GT")
+      registers[EQ] = (registers[op.args[0]] > registers[op.args[1]]);
+      break;
+    }
+
+    case (GTI_INST) : {
+      INFO("GTI")
+      registers[EQ] = (registers[op.args[0]] > op.args[1]);
+      break;
+    }
+
+    case (GTE_INST) : {
+      INFO("GTE")
+      registers[EQ] = (registers[op.args[0]] >= registers[op.args[1]]);
+      break;
+    }
+
+    case (GTEI_INST) : {
+      INFO("GTEI")
+      registers[EQ] = (registers[op.args[0]] >= op.args[1]);
+      break;
+    }
+
+    case (LT_INST) : {
+      INFO("LT")
+      registers[EQ] = (registers[op.args[0]] < registers[op.args[1]]);
+      break;
+    }
+
+    case (LTI_INST) : {
+      INFO("LTI")
+      registers[EQ] = (registers[op.args[0]] < op.args[1]);
+      break;
+    }
+
+    case (LTE_INST) : {
+      INFO("LTE")
+      registers[EQ] = (registers[op.args[0]] <= registers[op.args[1]]);
+      break;
+    }
+
+    case (LTEI_INST) : {
+      INFO("LTEI")
+      registers[EQ] = (registers[op.args[0]] <= op.args[1]);
+      break;
+    }
 
     default:
       ERROR("Unknow op code 0x%04x", op.meta.op_code)

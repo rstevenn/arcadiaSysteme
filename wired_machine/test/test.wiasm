@@ -6,12 +6,12 @@ ENTRY:
     
     load  ra rb
     loadi ra 128
-    loada ra 0xFFFFF
+    loada ra 0xFFF
 
     save ra rb
     savei ra 128
-    savea  0xFFFFF ra
-    saveai 0xFFFFF 0128
+    savea  0xFFF ra
+    saveai 0xFFF 0128
 
     add   ra rb rc
     addi  ra rb 128
@@ -19,6 +19,7 @@ ENTRY:
     mini  ra rb 128
     mult  ra rb rc
     multi ra rb 128
+    loadi rc 128
     div   ra rb rc
     divi  ra rb 128
 
@@ -48,21 +49,21 @@ ENTRY:
 
 FLAG:
     jre   ra 
-    jrei  0xffff
+    jrei  0xfff
     jrei  FLAG 
 
     jeq   ra 
-    jeqi  0xffff
+    jeqi  0xfff
     jeqi  FLAG 
 
     jne   ra 
-    jnei  0xffff
+    jnei  0xfff
     jnei  FLAG 
 
     jmp   ra 
-    jmpi  0xffff
+    jmpi  0xfff
     jmpi  FLAG 
 
     jmp_th   ra 
-    jmp_thi  0xffff
+    jmp_thi  0xfff
     jmp_thi  FLAG 

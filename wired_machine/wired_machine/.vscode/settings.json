@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "stdio.h": "c",
-        "base_log.h": "c"
-    }
-}
