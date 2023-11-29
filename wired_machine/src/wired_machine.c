@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
+    char pc_set = 0;
 
     switch (op_meta.op_size) {
     case (inst_128): {
@@ -117,48 +118,96 @@ int main(int argc, char *argv[]) {
 
     // decode && execute
     switch (op.meta.op_code) {
-    case (SCALL_INST) : {
-        INFO("SCALL 0x%04lx", op.args[0])
-        
-        switch (op.args[0]) {
-            case (0): {
-            INFO("no op")
-            break;
-        }
+    case (SCALL_INST): {
+      INFO("SCALL 0x%04lx", op.args[0])
 
-        default:
-            WARNING("Invalid scall number 0x%04lx", op.args[0])
-            break;
-        } 
+      switch (op.args[0]) {
+      case (0): {
+        INFO("no op")
+        break;
+      }
 
-        break; 
-    }
+      default:
+        WARNING("Invalid scall number 0x%04lx", op.args[0])
+        break;
+      }
 
-    
-
-    default:
-        ERROR("Unknow op code 0x%04x", op.meta.op_code)
-    }
-    
-    // clock
-    switch (op_meta.op_size) {
-    case (inst_128): {
-      registers[PC] += 2*sizeof(uint64_t);
       break;
     }
 
-    case (inst_192): {
-      registers[PC] += 3*sizeof(uint64_t);
-      break;   
+    // LOAD
+    case (LOAD_INST): {
+        INFO("LOAD")
+        registers[op.args[0]] = registers[op.args[1]];
+        break;
     }
 
-    case (inst_256): {
-      registers[PC] += 4*sizeof(uint64_t);
-      break;   
+    case (LOADI_INST): {
+        INFO("LOADI")
+        registers[op.args[0]] = op.args[1];
+        break;
     }
+
+    case (LOADA_INST): {
+        INFO("LOADA")
+        registers[op.args[0]] = *(vm_ram+op.args[1]);
+        break;
+    }
+
+    // SAVE
+    case (SAVE_INST): {
+        INFO("SAVE")
+        *(vm_ram+registers[op.args[0]]) = registers[op.args[1]];
+        break;
+    }
+
+    case (SAVEI_INST): {
+        INFO("SAVEI")
+        *(vm_ram+registers[op.args[0]]) = op.args[1];
+        break;
+    }
+    
+    case (SAVEA_INST): {
+        INFO("SAVEA")
+        *(vm_ram+op.args[0]) = registers[op.args[1]];
+        break;
+    }
+
+    case (SAVEAI_INST): {
+        INFO("SAVEAI")
+        *(vm_ram+op.args[0]) = op.args[1];
+        break;
+    }
+
+
+
+
 
     default:
-      ERROR("Invalide op size '%ul'", op.meta.op_size)
+      ERROR("Unknow op code 0x%04x", op.meta.op_code)
+    }
+
+    // clock
+    if (!pc_set) {
+      switch (op_meta.op_size) {
+      case (inst_128): {
+        registers[PC] += 2 * sizeof(uint64_t);
+        break;
+      }
+
+      case (inst_192): {
+        registers[PC] += 3 * sizeof(uint64_t);
+        break;
+      }
+
+      case (inst_256): {
+        registers[PC] += 4 * sizeof(uint64_t);
+        break;
+      }
+
+      default:
+        ERROR("Invalide op size '%ul'", op.meta.op_size)
+      }
     }
   }
 
