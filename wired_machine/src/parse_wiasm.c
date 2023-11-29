@@ -896,6 +896,8 @@ size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, ra
     
     if (raw_instr_type==inst_256)
         return sizeof(raw_256_op);
+    
+    ERROR("Invalid instruction size")
 }
 
 registry_t buffer_to_register(char* buffer){

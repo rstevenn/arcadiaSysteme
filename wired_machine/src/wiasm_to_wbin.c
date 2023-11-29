@@ -69,7 +69,7 @@ void render_pgm(operation_t* op, size_t* size_out, char* data_out){
     }
 
     default:
-        ERROR("Unknow instruction with type %lu", op->size)
+        ERROR("Unknow instruction with type %u", op->size)
         break;
     }
 }
@@ -101,7 +101,7 @@ char* readAllFile(char* path)
 } 
 
 
-int main(size_t argc, char* argv[])
+int main(int argc, char* argv[])
 {
     // check args
     if (argc <= 1)
@@ -258,6 +258,6 @@ int main(size_t argc, char* argv[])
     fclose(fp);
 
     INFO("ENDED")
-    return 1;
+    return 0;
 }
 
