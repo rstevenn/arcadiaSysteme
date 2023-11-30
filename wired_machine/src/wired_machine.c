@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     // fetch
-    INFO("fetch at pc: %lu", registers[PC])
+    INFO("fetch at pc: 0x%x", registers[PC])
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
     case (LOADA_INST): {
         INFO("LOADA")
 #if (SANITYZE_MEM == 1)
-        if (op.args[1] < 0 || op.args[1] > header.ram_size+1)
+        if (op.args[1] < 0 || op.args[1] > header.ram_size-1)
           ERROR("Out of range adress 0x%04x", op.args[1])
 #endif 
         registers[op.args[0]] = *(vm_ram+op.args[1]);
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
     case (SAVE_INST): {
         INFO("SAVE")
 #if (SANITYZE_MEM == 1)
-        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
           ERROR("Out of range adress 0x%04x", op.args[1])
 #endif 
         *(vm_ram+registers[op.args[0]]) = registers[op.args[1]];
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
     case (SAVEI_INST): {
         INFO("SAVEI")
 #if (SANITYZE_MEM == 1)
-        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
           ERROR("Out of range adress 0x%04x", op.args[1])
 #endif 
         *(vm_ram+registers[op.args[0]]) = op.args[1];
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
     case (SAVEA_INST): {
         INFO("SAVEA")
 #if (SANITYZE_MEM == 1)
-        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
           ERROR("Out of range adress 0x%04x", op.args[1])
 #endif 
         *(vm_ram+op.args[0]) = registers[op.args[1]];
@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
     case (SAVEAI_INST): {
         INFO("SAVEAI")
 #if (SANITYZE_MEM == 1)
-        if (op.args[0] < 0 || op.args[0] > header.ram_size+1)
+        if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
           ERROR("Out of range adress 0x%04x", op.args[1])
 #endif 
         *(vm_ram+op.args[0]) = op.args[1];
@@ -382,6 +382,129 @@ int main(int argc, char *argv[]) {
       break;
     }
 
+    // jumps
+    case (JRE_INST) : {
+      INFO("JRE")
+      uint64_t addr = registers[PC] + registers[op.args[0]];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+    case (JREI_INST) : {
+      INFO("JRE")
+      uint64_t addr = registers[PC] + op.args[0];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+    case (JEQ_INST) : {
+      INFO("JEQ")
+      if (!registers[EQ]) {
+        break;
+      }
+
+      uint64_t addr = registers[op.args[0]];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+    case (JEQI_INST) : {
+      INFO("JEQI")
+      if (!registers[EQ]) {
+        break;
+      }
+
+      uint64_t addr = op.args[0];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+    case (JNE_INST) : {
+      INFO("JNE")
+      if (registers[EQ]) {
+        break;
+      }
+
+      uint64_t addr = registers[op.args[0]];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+    case (JNEI_INST) : {
+      INFO("JNEI")
+      if (registers[EQ]) {
+        break;
+      }
+      
+      uint64_t addr = op.args[0];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+
+    case (JMP_INST) : {
+      INFO("JMP")
+
+      uint64_t addr = registers[op.args[0]];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
+    case (JMPI_INST) : {
+      INFO("JUMPI")      
+      uint64_t addr = op.args[0];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04x", addr)
+#endif 
+
+      registers[PC] = addr;
+      pc_set = 1;
+      break;
+    }
+
     default:
       ERROR("Unknow op code 0x%04x", op.meta.op_code)
     }
@@ -405,9 +528,12 @@ int main(int argc, char *argv[]) {
       }
 
       default:
-        ERROR("Invalide op size '%ul'", op.meta.op_size)
+        ERROR("Invalide op size '%lu'", op.meta.op_size)
       }
     }
+
+    // multi thread
+    
   }
 
   // clear

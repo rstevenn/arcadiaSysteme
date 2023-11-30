@@ -47,23 +47,28 @@ ENTRY:
     lte   ra rb
     ltei  ra 128
 
-FLAG:
+    loadi ra 16
     jre   ra 
-    jrei  0xfff
-    jrei  FLAG 
+    jrei  0x10
 
     jeq   ra 
-    jeqi  0xfff
-    jeqi  FLAG 
+    jeqi  0x438
+    jeqi  FLAG0 
 
+FLAG0:
+    loadi ra 1136
     jne   ra 
-    jnei  0xfff
-    jnei  FLAG 
+    jnei  0x480
+    jnei  FLAG1 
 
+FLAG1:
+    loadi ra 1208
     jmp   ra 
-    jmpi  0xfff
-    jmpi  FLAG 
+    jmpi  0x4c8
+    jmpi  FLAG2
 
+FLAG2:
     jmp_th   ra 
     jmp_thi  0xfff
     jmp_thi  FLAG 
+FLAG:
