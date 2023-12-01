@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +8,88 @@
 
 #define SANITYZE_MEM 1
 #define SANITIZE_MATH 1
+#define TH_SWITCH 4
 
+//#undef INFO
+//#define INFO(...) 
+
+typedef struct {
+  uint64_t regiters[REGISTERS_NB];
+  char* stack;
+  char active;
+} vm_th_t;
+
+typedef struct {
+  vm_th_t* ths;
+  uint64_t nb_ths;
+  uint64_t allocated_ths;
+  uint64_t current;
+} ths_t;
+
+typedef struct {
+  char* stack_base;
+  uint64_t sp;
+  uint64_t spl;
+} ctx_t;
+
+ths_t* init_ths() {
+  ths_t* ths = (ths_t*)malloc(sizeof(ths_t));
+  if (ths == NULL)
+    ERROR("can't allocate memory for thes table")
+  
+  ths->ths = NULL;
+  ths->nb_ths = 0;
+  ths->allocated_ths = 0;
+  ths->current = 0;
+  return ths;
+} 
+
+void add_ctx(ths_t* threads, uint64_t stack_size, uint64_t pc, uint64_t sp, uint64_t spl) {
+  
+  threads->nb_ths++;
+  if(threads->nb_ths > threads->allocated_ths) {
+    if (threads->allocated_ths == 0)
+      threads->allocated_ths = 1;
+
+    threads->ths = (vm_th_t*)realloc(threads->ths, sizeof(vm_th_t)*threads->allocated_ths*2);
+    threads->allocated_ths *= 2;
+    if (threads->ths == NULL)
+      ERROR("Can't allocate threads")
+  } 
+
+  threads->ths[threads->nb_ths-1].active = 1;
+  char* out = memset(threads->ths[threads->nb_ths-1].regiters, 0, sizeof(uint64_t)*REGISTERS_NB);
+  if (out== NULL)
+    ERROR("Can't set registers")
+
+  threads->ths[threads->nb_ths-1].regiters[PC] = pc;
+  threads->ths[threads->nb_ths-1].regiters[SP] = sp;
+  threads->ths[threads->nb_ths-1].regiters[SPL] = spl;
+
+  threads->ths[threads->nb_ths-1].stack = (char*)malloc(sizeof(char)*stack_size);
+  if (threads->ths[threads->nb_ths-1].stack == NULL)
+    ERROR("Can't allocate stack")
+
+}
+
+void switch_ctx(ths_t* threads, uint64_t th_id, registry_t* hr, char* stack_base, size_t stack_size) {
+  // store
+  vm_th_t* c_thread = &threads->ths[threads->current];
+  if (memcpy(c_thread->regiters, hr, REGISTERS_NB) == NULL)
+    ERROR("Can't copy registers")
+  if (memcpy(c_thread->stack, stack_base, stack_size) == NULL)
+    ERROR("Can't copy vram")
+  
+
+  // load
+  c_thread = &threads->ths[th_id];
+  if (memcpy(hr, c_thread->regiters, REGISTERS_NB) == NULL)
+    ERROR("Can't copy registers")
+  if (memcpy(stack_base, c_thread->stack, stack_size) == NULL)
+    ERROR("Can't copy vram")
+  
+  threads->current = th_id;
+}
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
@@ -22,11 +104,11 @@ char *readAllFile(char *path, size_t *file_size_out) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars", size)
+  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %llu chars", size)
 
   size_t got;
   CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %lu != got %lu)", path,
+                   "unable to read the file %s (expected %llu != got %llu)", path,
                    size, got);
   buffer[got] = '\0';
 
@@ -45,7 +127,7 @@ int main(int argc, char *argv[]) {
   size_t file_size;
   char *rawText = readAllFile(argv[1], &file_size);
   char *current = rawText;
-  INFO("LOAD: '%s' %lu bits", argv[1], file_size)
+  INFO("LOAD: '%s' %llu bits", argv[1], file_size)
 
   // extract and sanitize header metadata
   if (file_size < sizeof(wired_vm_header_t))
@@ -65,7 +147,7 @@ int main(int argc, char *argv[]) {
     ERROR("Entry point out of executable zone");
 
   // setup ram
-  INFO("init ram of %lu bits and load program", header.ram_size);
+  INFO("init ram of %llu bits and load program", header.ram_size);
   char *vm_ram = (char *)malloc(header.ram_size * sizeof(char));
   if (vm_ram == NULL)
     ERROR("Can't allocate ram memory")
@@ -80,12 +162,24 @@ int main(int argc, char *argv[]) {
   registers[SP] = header.ram_size - 1 - header.stack_size;
   registers[PC] = header.entry_point;
 
+  // setup ctx
+  INFO("setup context")
+  ctx_t ctx;
+  ctx.stack_base = &vm_ram[registers[SP]];
+  ctx.sp  = registers[SP];
+  ctx.spl = registers[SPL];
+
+  // setup threads
+  INFO("setup threads")
+  ths_t* threads = init_ths();
+  add_ctx(threads, header.stack_size, registers[PC], ctx.sp, ctx.spl);
+
   // run
   INFO("Launch programm")
 
   while (1) {
     // fetch
-    INFO("fetch at pc: 0x%x", registers[PC])
+    INFO("IC: 0x%llu fetch at pc: 0x%llx", registers[IC], registers[PC])
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
@@ -123,7 +217,7 @@ int main(int argc, char *argv[]) {
     // decode && execute
     switch (op.meta.op_code) {
     case (SCALL_INST): {
-      INFO("SCALL 0x%04lx", op.args[0])
+      INFO("SCALL 0x%04llx", op.args[0])
 
       switch (op.args[0]) {
       case (0): {
@@ -132,7 +226,7 @@ int main(int argc, char *argv[]) {
       }
 
       default:
-        WARNING("Invalid scall number 0x%04lx", op.args[0])
+        WARNING("Invalid scall number 0x%04llx", op.args[0])
         break;
       }
 
@@ -156,7 +250,7 @@ int main(int argc, char *argv[]) {
         INFO("LOADA")
 #if (SANITYZE_MEM == 1)
         if (op.args[1] < 0 || op.args[1] > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", op.args[1])
+          ERROR("Out of range adress 0x%04llx", op.args[1])
 #endif 
         registers[op.args[0]] = *(vm_ram+op.args[1]);
         break;
@@ -167,7 +261,7 @@ int main(int argc, char *argv[]) {
         INFO("SAVE")
 #if (SANITYZE_MEM == 1)
         if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", op.args[1])
+          ERROR("Out of range adress 0x%04llx", op.args[1])
 #endif 
         *(vm_ram+registers[op.args[0]]) = registers[op.args[1]];
         break;
@@ -177,7 +271,7 @@ int main(int argc, char *argv[]) {
         INFO("SAVEI")
 #if (SANITYZE_MEM == 1)
         if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", op.args[1])
+          ERROR("Out of range adress 0x%04llx", op.args[1])
 #endif 
         *(vm_ram+registers[op.args[0]]) = op.args[1];
         break;
@@ -187,7 +281,7 @@ int main(int argc, char *argv[]) {
         INFO("SAVEA")
 #if (SANITYZE_MEM == 1)
         if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", op.args[1])
+          ERROR("Out of range adress 0x%04llx", op.args[1])
 #endif 
         *(vm_ram+op.args[0]) = registers[op.args[1]];
         break;
@@ -197,7 +291,7 @@ int main(int argc, char *argv[]) {
         INFO("SAVEAI")
 #if (SANITYZE_MEM == 1)
         if (op.args[0] < 0 || op.args[0] > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", op.args[1])
+          ERROR("Out of range adress 0x%04llx", op.args[1])
 #endif 
         *(vm_ram+op.args[0]) = op.args[1];
         break;
@@ -388,7 +482,7 @@ int main(int argc, char *argv[]) {
       uint64_t addr = registers[PC] + registers[op.args[0]];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -401,7 +495,7 @@ int main(int argc, char *argv[]) {
       uint64_t addr = registers[PC] + op.args[0];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -418,7 +512,7 @@ int main(int argc, char *argv[]) {
       uint64_t addr = registers[op.args[0]];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -435,7 +529,7 @@ int main(int argc, char *argv[]) {
       uint64_t addr = op.args[0];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -452,7 +546,7 @@ int main(int argc, char *argv[]) {
       uint64_t addr = registers[op.args[0]];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -469,7 +563,7 @@ int main(int argc, char *argv[]) {
       uint64_t addr = op.args[0];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -477,14 +571,13 @@ int main(int argc, char *argv[]) {
       break;
     }
 
-
     case (JMP_INST) : {
       INFO("JMP")
 
       uint64_t addr = registers[op.args[0]];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
@@ -497,11 +590,34 @@ int main(int argc, char *argv[]) {
       uint64_t addr = op.args[0];
 #if (SANITYZE_MEM == 1)
         if (addr < 0 || addr > header.ram_size-1)
-          ERROR("Out of range adress 0x%04x", addr)
+          ERROR("Out of range adress 0x%04llx", addr)
 #endif 
 
       registers[PC] = addr;
       pc_set = 1;
+      break;
+    }
+
+    case (JMP_TH_INST) : {
+      INFO("JMP_TH")
+
+      uint64_t addr = registers[op.args[0]];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04llx", addr)
+#endif 
+      add_ctx(threads, header.stack_size, registers[op.args[0]], ctx.sp, ctx.spl);
+      break;
+    }
+
+    case (JMP_THI_INST) : {
+      INFO("JUMPI")      
+      uint64_t addr = op.args[0];
+#if (SANITYZE_MEM == 1)
+        if (addr < 0 || addr > header.ram_size-1)
+          ERROR("Out of range adress 0x%04llx", addr)
+#endif 
+      add_ctx(threads, header.stack_size, op.args[0], ctx.sp, ctx.spl);
       break;
     }
 
@@ -510,6 +626,7 @@ int main(int argc, char *argv[]) {
     }
 
     // clock
+    registers[IC]++;
     if (!pc_set) {
       switch (op_meta.op_size) {
       case (inst_128): {
@@ -528,11 +645,26 @@ int main(int argc, char *argv[]) {
       }
 
       default:
-        ERROR("Invalide op size '%lu'", op.meta.op_size)
+        ERROR("Invalide op size '%u'", op.meta.op_size)
       }
     }
 
     // multi thread
+    if (registers[IC]%TH_SWITCH == 0) {
+      // find next
+      uint64_t old = threads->current;
+      uint64_t current = old;
+
+      do {
+        current++;
+        if (current > threads->nb_ths-1)
+          current = 0;
+      } while(!threads->ths[current].active);
+      
+      switch_ctx(threads, current, (registry_t*)registers, ctx.stack_base, header.stack_size);
+      INFO("Switch ctx: [%llu] => [%llu]", old, current)
+
+    }
     
   }
 

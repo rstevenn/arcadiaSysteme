@@ -87,7 +87,7 @@ typedef enum {
     RE, RF, RG, RH,
 
     // hiden system regiters
-    SPL,
+    SPL, IC,
 
     REGISTERS_NB
 } registry_t;

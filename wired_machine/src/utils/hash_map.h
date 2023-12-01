@@ -29,7 +29,7 @@ size_t hash_label(char label[64]) {
 
     char* current = label;
     while (*current != '\0') {
-        hash ^= (*current) + hash;
+        hash = (*current) ^ hash*13;
         current++;
     }
 
